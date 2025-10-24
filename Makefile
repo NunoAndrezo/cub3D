@@ -24,10 +24,10 @@ UP			=	\033[A
 CUT			=	\033[K
 
 #source files
-SRC_FILES	=	main.cpp \
-				Animal.cpp 
+SRC_FILES	=	main.c \
+				parsing.c 
 
-OBJ_FILES	=	$(SRC_FILES:.cpp=.o)
+OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
 #paths
 SRC			=	$(addprefix $(SRC_DIR), $(SRC_FILES))
@@ -43,7 +43,7 @@ $(NAME): $(OBJ)
 	@echo "$(GREEN)Finished [$(NAME)]$(RESET)"
 
 #compile objects
-$(OBJ_DIR)%.o:$(SRC_DIR)%.cpp
+$(OBJ_DIR)%.o:$(SRC_DIR)%.c
 	@mkdir -p $(OBJ_DIR)
 	@echo "$(YELLOW)Compiling [$@]...$(RESET)"
 	@$(CC) $(CFLAGS) -I $(INC_DIR) -o $@ -c $<
