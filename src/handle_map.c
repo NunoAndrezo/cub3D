@@ -1,14 +1,18 @@
 #include "../inc/handle_map.h"
 
-void handle_map(char *map)
+void handle_map(char *map_file)
 {
+
+	// check map dimensions and validity
+	// store map in game struct // allocate memory
+	// further processing (flood fill, collectibles, etc.)
 	int		fd;
 	char	*line;
 
-	fd = open(map, O_RDONLY);
+	fd = open(map_file, O_RDONLY);
 	if (fd < 0)
 	{
-		fprintf(stderr, "Error: Cannot open file\n");
+		fprintf(stderr, "Error: Cannot open map file\n");
 		exit(EXIT_FAILURE);
 	}
 	line = get_next_line(fd);
@@ -18,7 +22,7 @@ void handle_map(char *map)
 		close(fd);
 		exit(EXIT_FAILURE);
 	}
-/*	if (line[ft_strlen(line) - 1] == '\n')
+	if (line[ft_strlen(line) - 1] == '\n')
 		line[ft_strlen(line) - 1] = '\0';
 	game->map_dimensions.y = 1;
 	game->map_dimensions.x = get_len(line);
@@ -37,11 +41,13 @@ void handle_map(char *map)
 		}
 		game->map_dimensions.y++;
 	}
-	close(fd);*/
+	close(fd);
+}
+
+
 /*	if (valid_map(av[1], &game) == true)
 	{
 		flood_fill(&game);
 		count_collectibles(&game);
 		init_game(&game);
 	}*/
-}
