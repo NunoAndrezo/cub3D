@@ -1,6 +1,6 @@
-#include "../inc/handle_map.h"
+#include "../inc/cub3d.h"
 
-void handle_map(char *map_file)
+void handle_map(char *map_file, t_game *game)
 {
 
 	// check map dimensions and validity
@@ -22,10 +22,9 @@ void handle_map(char *map_file)
 		close(fd);
 		exit(EXIT_FAILURE);
 	}
-	if (line[ft_strlen(line) - 1] == '\n')
-		line[ft_strlen(line) - 1] = '\0';
-	game->map_dimensions.y = 1;
-	game->map_dimensions.x = get_len(line);
+	// Now we gotta see if the map is valid and get its dimensions
+	// It doesn't have to be a rectangle.
+	// I want to store the different lines lenghts and check if its possible
 	while (line)
 	{
 		free(line);
@@ -34,12 +33,12 @@ void handle_map(char *map_file)
 			line[ft_strlen(line) - 1] = '\0';
 		if (!line)
 			break ;
-		if (game->map_dimensions.x != get_len(line))
+		if (game->map.map_dim_x != get_len(line))
 		{
 			write(2, "Error: Invalid number of columns\n", 34);
 			(free(line), close(fd), exit(EXIT_FAILURE));
 		}
-		game->map_dimensions.y++;
+		game->map.map_dim_y++;
 	}
 	close(fd);
 }

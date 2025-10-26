@@ -1,4 +1,4 @@
-#include "../inc/parsing.h"
+#include "../inc/cub3d.h"
 
 static void	check_map_name(char *map);
 
