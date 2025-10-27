@@ -8,10 +8,6 @@
 #include <string.h>
 #include "../inc/get_next_line.h"
 
-void	handle_map(char *map, t_game *game);
-
-void	parse(int ac, char **av);
-
 typedef struct s_win
 {
 	void		*mlx_ptr;
@@ -35,5 +31,11 @@ typedef struct	s_game
 	t_map		map;
 	t_win		window;
 }				t_game;
+
+void	handle_map(char *map, t_game *game);
+
+void	parse(int ac, char **av);
+
+void handle_map(char *map_file, t_game *game);
 
 #endif

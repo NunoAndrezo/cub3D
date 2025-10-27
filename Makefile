@@ -25,7 +25,11 @@ CUT			=	\033[K
 
 #source files
 SRC_FILES	=	main.c \
-				parsing.c 
+				parsing.c \
+				handle_map.c \
+				get_next_line.c \
+				get_next_line_utils.c
+
 
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
