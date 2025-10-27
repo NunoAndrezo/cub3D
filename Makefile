@@ -24,11 +24,9 @@ UP			=	\033[A
 CUT			=	\033[K
 
 #source files
-SRC_FILES	=	main.c \
-				parsing.c \
-				handle_map.c \
-				get_next_line.c \
-				get_next_line_utils.c
+SRC_FILES	=	main.c parsing.c initiate.c \
+				handle_map.c get_next_line.c get_next_line_utils.c \
+				ft_bzero.c ft_calloc.c utils.c
 
 
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
