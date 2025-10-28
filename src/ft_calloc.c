@@ -1,4 +1,4 @@
-#include "../inc/get_next_line.h"
+#include "../inc/cub3d.h"
 
 static void	*ft_calloc_helper(size_t c);
 

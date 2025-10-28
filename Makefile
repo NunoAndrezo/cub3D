@@ -2,7 +2,7 @@ NAME		=	cub3d
 
 CC			=	cc
 
-CFLAGS		=	-Wall -Werror -Wextra -g -lm -I/usr/include -Imlx_linux
+CFLAGS		=	-Wall -Werror -Wextra -g -I/usr/include -Imlx_linux
 
 PRINTF		= ./printf/libftprintf.a
 LIBFT		= ./libft/libft.a
@@ -26,8 +26,7 @@ CUT			=	\033[K
 #source files
 SRC_FILES	=	main.c parsing.c initiate.c map_validation.c \
 				handle_map.c get_next_line.c get_next_line_utils.c \
-				ft_bzero.c ft_calloc.c utils.c
-
+				ft_bzero.c ft_calloc.c utils.c setup_signals.c
 
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
@@ -45,6 +44,7 @@ $(NAME): $(OBJ)
 #-s to silent/surpress output
 	@$(CC) $(CFLAGS) $(OBJ) $(LIBMLX) -lXext -lX11 -lm -lz -o $(NAME)
 	@echo "$(GREEN)Finished [$(NAME)]$(RESET)"
+
 
 #compile objects
 $(OBJ_DIR)%.o:$(SRC_DIR)%.c

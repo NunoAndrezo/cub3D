@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
+# include <signal.h>
 
 #include "../inc/get_next_line.h"
 #include "../minilibx-linux/mlx.h"
@@ -46,9 +47,12 @@ void	handle_map(char *map_file, t_game *game);
 //map_validation.c
 bool	map_is_valid(t_game *game);
 
-
 // initiate.c
 void	initiate_and_allocate(t_game *game);
+
+//setup_signals.c
+void	setup_signals(void);
+
 
 //ft_bzero.c
 void	ft_bzero(void *s, size_t n);

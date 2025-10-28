@@ -26,6 +26,7 @@ static bool	check_player(t_game *game)
 	player = 0;
 	while (game->map.map[j])
 	{
+		i = 0;
 		while (game->map.map[j][i])
 		{
 			if (game->map.map[j][i] == 'N' || game->map.map[j][i] == 'W' || game->map.map[j][i] == 'E' || game->map.map[j][i] == 'S')
@@ -33,7 +34,9 @@ static bool	check_player(t_game *game)
 				player++;
 				game->map.player_orientation = game->map.map[j][i];
 			}
+			i++;
 		}
+		j++;
 	}
 	if (player != 1)
 		return (false);

@@ -15,7 +15,7 @@ static void	check_map_name(char *map)
 
 	if (!map || !map[0])
 		fprintf(stderr, "Error: Wrong argument av[1].\n"), exit(1);
-	len = strlen(map); // swap for ft_strlen
+	len = ft_strlen(map);
 	len--;
 	if (!(map[len -3] == '.' && map[len -2] == 'c' && map[len -1] == 'u' && map[len] == 'b'))
 		fprintf(stderr, "Error: Invalid map extension <*.cub>\n"), exit(1);
