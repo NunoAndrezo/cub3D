@@ -2,7 +2,7 @@ NAME		=	cub3d
 
 CC			=	cc
 
-CFLAGS		=	-Wall -Werror -Wextra -g -lm
+CFLAGS		=	-Wall -Werror -Wextra -g -lm -I/usr/include -Imlx_linux
 
 PRINTF		= ./printf/libftprintf.a
 LIBFT		= ./libft/libft.a
@@ -41,7 +41,9 @@ all: $(NAME)
 #compile the executable
 $(NAME): $(OBJ)
 	@echo "$(YELLOW)Compiling [$(NAME)]...$(RESET)"
-	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	@$(MAKE) -s -C minilibx-linux
+#-s to silent/surpress output
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBMLX) -lXext -lX11 -lm -lz -o $(NAME)
 	@echo "$(GREEN)Finished [$(NAME)]$(RESET)"
 
 #compile objects
@@ -55,19 +57,13 @@ $(OBJ_DIR)%.o:$(SRC_DIR)%.c
 
 #clean rule
 clean:
-	@if [ -d "$(OBJ_DIR)" ]; then \
-	rm -rf $(OBJ_DIR); \
-	echo "$(BLUE)Deleting all objects...$(RESET)"; else \
-	echo "No objects to remove."; \
-	fi;
+	@if [ -d "$(OBJ_DIR)" ]; then rm -rf $(OBJ_DIR); echo "$(BLUE)Deleting all objects...$(RESET)"; else echo "No objects to remove."; fi;
 
 #fclean rule
 fclean: clean
-	@if [ -f "$(NAME)" ]; then \
-	rm -f $(NAME); \
-	echo "$(BLUE)Deleting $(NAME)...$(RESET)"; else \
-	echo "No Executable to remove."; \
-	fi;
+	@if [ -f "$(NAME)" ]; then rm -f $(NAME); echo "$(BLUE)Deleting $(NAME)...$(RESET)"; else echo "No Executable to remove."; fi;
+	@if [ -f minilibx-linux/libmlx.a ]; then rm -f minilibx-linux/libmlx.a; echo "$(BLUE)Deleting libmlx.a...$(RESET)"; else echo "No libmlx.a to remove."; fi;
+	@if [ -f minilibx-linux/libmlx_Linux.a ]; then rm -f minilibx-linux/libmlx_Linux.a; echo "$(BLUE)Deleting libmlx_Linux.a...$(RESET)"; else echo "No libmlx_Linux.a to remove."; fi;
 
 #re rule
 re: fclean all

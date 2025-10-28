@@ -11,9 +11,9 @@ int main(int ac, char **av)
 	{
 		game.is_valid_to_start = true;
 		initiate_and_allocate(&game); // initialize mlx, window, etc.
-		load_textures(&game); // load game textures
-		start_gaming(&game); //main game loop
+		//load_textures(&game); // load game textures
+		//start_gaming(&game); //main game loop
 	}
-	free_game(&game); // free allocated memory
+	//free_game(&game); // free allocated memory
 	return (0);
 }

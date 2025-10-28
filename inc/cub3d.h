@@ -33,6 +33,8 @@ typedef struct	s_game
 	t_map		map;
 	t_win		window;
 	bool		is_valid_to_start;
+	void		*mlx;
+	void		*win;
 }				t_game;
 
 //parsing.c

@@ -37,6 +37,7 @@ static bool	check_player(t_game *game)
 	}
 	if (player != 1)
 		return (false);
+	return (true);
 }
 
 static bool	is_map_playable(t_game *game)
@@ -49,8 +50,10 @@ static bool	is_map_playable(t_game *game)
 
 static bool	flood_fill_the_map(t_game *game)
 {
+	if (game)
+		return (true);
+	return (false);
 	// Placeholder for flood fill algorithm to check if the map is closed and playable
 	// This function should implement the flood fill logic
 	// For now, we will just return true
-	return (true);
 }
