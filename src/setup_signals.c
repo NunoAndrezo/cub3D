@@ -19,8 +19,9 @@ static void	siginfo_handler(int sig, siginfo_t *info, void *context)
 	(void)info;
 	if (sig == SIGINT)
 	{
-		write(1, "\n", 1);
-		exit(EXIT_SUCCESS);
+	/*	write(1, "\n", 1);
+		exit(EXIT_SUCCESS);*/
+		printf("\nSIGINT received. Graceful exit not implemented yet.\n");
 		// later when we have x to quit we are going to ignore SIGINT during gameplay
 		// and only allow it to quit when in main menu
 	}
