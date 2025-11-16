@@ -23,9 +23,11 @@ typedef struct s_win
 typedef struct	s_map
 {
 	char	**map;
+	char	*map_file;
 	char	player_orientation;
-	int		x;
-	int		y;
+	int		player_start_x;
+	int		player_start_y;
+	int		y_max;
 
 }				t_map;
 
@@ -63,5 +65,8 @@ void	*ft_calloc(size_t count, size_t size);
 //utils.c
 char	*ft_strdup(const char *s);
 size_t	ft_strlen(const char *s);
+
+//flood_fill.c
+bool	flood_fill(t_game *game);
 
 #endif

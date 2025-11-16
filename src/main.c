@@ -10,6 +10,7 @@ int main(int ac, char **av)
 	handle_map(av[1], &game);
 	if (map_is_valid(&game) == true)
 	{
+		//copy_map(av[1], &game); need to fixe order, first we copy for flood and fill and then we do the noramal copy
 		game.is_valid_to_start = true;
 		initiate_and_allocate(&game); // initialize mlx, window, etc.
 		//load_textures(&game); // load game textures

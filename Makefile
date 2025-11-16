@@ -26,7 +26,8 @@ CUT			=	\033[K
 #source files
 SRC_FILES	=	main.c parsing.c initiate.c map_validation.c \
 				handle_map.c get_next_line.c get_next_line_utils.c \
-				ft_bzero.c ft_calloc.c utils.c setup_signals.c
+				ft_bzero.c ft_calloc.c utils.c setup_signals.c \
+				flood_fill.c
 
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
