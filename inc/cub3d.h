@@ -12,13 +12,22 @@
 #include "../inc/get_next_line.h"
 #include "../minilibx-linux/mlx.h"
 
-typedef struct s_win
+typedef enum e_game_state
 {
-	void		*mlx_ptr;
-	void		*window_ptr;
-	int			width;
-	int			height;
-}				t_win;
+	STATE_MENU,
+	STATE_OPTIONS,
+	STATE_PLAYING,
+	STATE_PAUSED
+}	t_game_state;
+
+/* simple image container */
+typedef struct s_img
+{
+void 	*img_ptr;
+int		w;
+int		h;
+char	*path;
+}	t_img;
 
 typedef struct	s_map
 {
@@ -33,11 +42,16 @@ typedef struct	s_map
 
 typedef struct	s_game
 {
-	t_map		map;
-	t_win		window;
-	bool		is_valid_to_start;
-	void		*mlx;
-	void		*win;
+	t_map				map;
+	void				*mlx;
+	void				*win;
+	int					win_w; /* current window width */
+	int					win_h; /* current window height */
+	t_game_state		state;
+	t_img				menu_image;
+	t_img				cursor; /* small arrow to indicate menu selection */
+	int                 menu_selection; /* 0=start,1=options,2=exit */
+	/* cursor animation removed; cursor is static */
 }				t_game;
 
 //parsing.c
@@ -50,7 +64,7 @@ void	handle_map(char *map_file, t_game *game);
 bool	map_is_valid(t_game *game);
 
 // initiate.c
-void	initiate_and_allocate(t_game *game);
+void	initiate_game(t_game *game);
 
 //setup_signals.c
 void	setup_signals(void);

@@ -6,8 +6,8 @@ static void allocate_map(t_game *game);
 
 void handle_map(char *map_file, t_game *game)
 {
-	ft_bzero(&game->map, sizeof(t_map)); // set map struct
-	game->map.map_file = map_file; // do I need to allocate memory here ?
+	ft_bzero(&game->map, sizeof(t_map));
+	game->map.map_file = map_file;
 	if (count_and_store_number_of_lines(game, game->map.map_file) <= 0)
 		fprintf(stderr, "Error: Map file is empty\n"), exit(EXIT_FAILURE);
 	copy_map(game->map.map_file, game);
@@ -48,6 +48,8 @@ static void copy_map(char *map_file, t_game *game)
 	line = get_next_line(fd);
 	if (!line)
 		fprintf(stderr, "Error: Empty or invalid map file\n"), close(fd), exit(EXIT_FAILURE);
+	if (line && line[ft_strlen(line) - 1] == '\n')
+		line[ft_strlen(line) - 1] = '\0';
 	game->map.map[i++] = ft_strdup(line);
 	while (line)
 	{
@@ -64,12 +66,12 @@ static void copy_map(char *map_file, t_game *game)
 
 static void allocate_map(t_game *game)
 {
-	game->map.map = (char **)ft_calloc(sizeof(char *), (game->map.y_max + 1));
-	game->map.map[game->map.y_max] = NULL;
+	game->map.map = (char **)ft_calloc((game->map.y_max + 1), sizeof(char *));
 	if (!game->map.map)
 	{
 		fprintf(stderr, "Error: Memory allocation failed\n");
 		//maybe free other stuff here
 		exit(EXIT_FAILURE);
 	}
+	game->map.map[game->map.y_max] = NULL;
 }
