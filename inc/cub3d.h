@@ -12,21 +12,29 @@
 #include "../inc/get_next_line.h"
 #include "../minilibx-linux/mlx.h"
 
-typedef enum e_game_state
+enum e_game_state
 {
 	STATE_MENU,
 	STATE_OPTIONS,
 	STATE_PLAYING,
 	STATE_PAUSED
-}	t_game_state;
+};
+
+enum e_texture_index
+{
+	NORTH = 0,
+	SOUTH = 1,
+	EAST = 2,
+	WEST = 3
+};
 
 /* simple image container */
 typedef struct s_img
 {
-void 	*img_ptr;
-int		w;
-int		h;
-char	*path;
+	void	*img_ptr;
+	char	*path;
+	int		w;
+	int		h;
 }	t_img;
 
 typedef struct	s_map
@@ -40,6 +48,42 @@ typedef struct	s_map
 
 }				t_map;
 
+typedef struct s_ray
+{
+	double	camera_x; // x-coordinate in camera space
+	double	dir_x; // direction of the ray
+	double	dir_y; // direction of the ray
+	int		map_x;	// current square of the map the ray is in
+	int		map_y;	// current square of the map the ray is in
+	int		step_x; // direction to step in x and y (either +1 or -1)
+	int		step_y; // direction to step in x and y (either +1 or -1)
+	double	sidedist_x; // means length of ray from current position to next x or y-side
+	double	sidedist_y; // means length of ray from current position to next x or y-side
+	double	deltadist_x; // length of ray from one x or y-side to next x or y-side
+	double	deltadist_y; // length of ray from one x or y-side to next x or y-side
+	double	wall_dist; // perpendicular distance from the ray to the wall
+	double	wall_x;    // where exactly the wall was hit
+	int		side;			 // was a NS or a EW wall hit?
+	int		line_height;   // height of line to draw on screen
+	int		draw_start;   // lowest pixel to fill in current stripe
+	int		draw_end;     // highest pixel to fill in current stripe
+}	t_ray;
+
+typedef struct s_player
+{
+	char	dir;
+	double	pos_x;
+	double	pos_y;
+	double	dir_x;
+	double	dir_y;
+	double	plane_x; // whats plane_x? it's a 2D raycaster version of camera plane
+	double	plane_y; // whats the difference between dir_y and plane_y? dir_y is the direction the player is facing, plane_y is perpendicular to that direction and defines the field of view
+	int		has_moved;
+	int		move_x;
+	int		move_y;
+	int		rotate;
+}	t_player;
+
 typedef struct	s_game
 {
 	t_map				map;
@@ -47,7 +91,8 @@ typedef struct	s_game
 	void				*win;
 	int					win_w; /* current window width */
 	int					win_h; /* current window height */
-	t_game_state		state;
+	enum e_game_state		state;
+	enum e_texture_index	textures[4]; // or int **textures; --- IGNORE ---
 	t_img				menu_image;
 	t_img				cursor; /* small arrow to indicate menu selection */
 	int                 menu_selection; /* 0=start,1=options,2=exit */
@@ -64,7 +109,7 @@ void	handle_map(char *map_file, t_game *game);
 bool	map_is_valid(t_game *game);
 
 // initiate.c
-void	initiate_game(t_game *game);
+void	initiate_mlx(t_game *game);
 
 //setup_signals.c
 void	setup_signals(void);

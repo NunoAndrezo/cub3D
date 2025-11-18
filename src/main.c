@@ -10,7 +10,7 @@ int main(int ac, char **av)
 	handle_map(av[1], &game);
 	if (map_is_valid(&game) == true)
 	{
-		initiate_game(&game); // initialize mlx, window, etc.
+		initiate_mlx(&game); // initialize mlx, window, etc.
 		//load_textures(&game); // load game textures
 		//start_gaming(&game); //main game loop
 	}
