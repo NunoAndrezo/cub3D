@@ -4,8 +4,6 @@ CC			=	cc
 
 CFLAGS		=	-Wall -Werror -Wextra -g -I/usr/include -Imlx_linux
 
-PRINTF		= ./printf/libftprintf.a
-LIBFT		= ./libft/libft.a
 LIBMLX		= ./minilibx-linux/libmlx_Linux.a
 
 
@@ -27,7 +25,7 @@ CUT			=	\033[K
 SRC_FILES	=	main.c parsing.c initiate_game.c map_validation.c \
 				handle_map.c get_next_line.c get_next_line_utils.c \
 				ft_bzero.c ft_calloc.c utils.c setup_signals.c \
-				flood_fill.c
+				flood_fill.c free_me_baby.c
 
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
@@ -59,6 +57,7 @@ $(OBJ_DIR)%.o:$(SRC_DIR)%.c
 #clean rule
 clean:
 	@if [ -d "$(OBJ_DIR)" ]; then rm -rf $(OBJ_DIR); echo "$(BLUE)Deleting all objects...$(RESET)"; else echo "No objects to remove."; fi;
+	@if [ -d "minilibx-linux/obj" ]; then rm -rf minilibx-linux/obj; echo "$(BLUE)Deleting minilibx objects...$(RESET)"; else echo "No minilibx objects to remove."; fi;
 
 #fclean rule
 fclean: clean

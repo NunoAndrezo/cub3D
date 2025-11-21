@@ -16,13 +16,13 @@ int main(int ac, char **av)
 	}
 	else
 	{
-	//	free_game(&game);
+		free_game(&game);
 		fprintf(stderr, "Error: Map validation failed. Cannot start the game.\n");
+		return (1);
 	}
-	//free_game(&game); // free allocated memory
+	free_game(&game); // free allocated memory
 	return (0);
 }
-// need to implement freeing of memory and error handling later
-// need to implement signals handling for graceful exit
+
 // need to implement window resizing?
 // need to implement user input handling

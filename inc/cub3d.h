@@ -1,6 +1,14 @@
 #ifndef CUB3D_H
 #define CUB3D_H
 
+#ifndef WWIDTH
+#define WWIDTH 1920
+#endif
+#ifndef WHEIGHT
+#define WHEIGHT 1000
+#endif
+
+#include <X11/keysym.h> // for keysyms like XK_Escape
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,6 +19,7 @@
 
 #include "../inc/get_next_line.h"
 #include "../minilibx-linux/mlx.h"
+
 
 enum e_game_state
 {
@@ -87,20 +96,20 @@ typedef struct s_player
 typedef struct	s_game
 {
 	t_map				map;
-	void				*mlx;
-	void				*win;
+	void				*mlx_struct;
+	void				*win_struct;
 	int					win_w; /* current window width */
 	int					win_h; /* current window height */
 	enum e_game_state		state;
 	enum e_texture_index	textures[4]; // or int **textures; --- IGNORE ---
-	t_img				menu_image;
-	t_img				cursor; /* small arrow to indicate menu selection */
-	int                 menu_selection; /* 0=start,1=options,2=exit */
-	/* cursor animation removed; cursor is static */
+	t_img				image;
 }				t_game;
 
 //parsing.c
 void	parse(int ac, char **av);
+
+//free_me_baby.c
+void	free_game(t_game *game);
 
 //handle_map.c
 void	handle_map(char *map_file, t_game *game);
