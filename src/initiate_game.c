@@ -1,6 +1,6 @@
 #include "../inc/cub3d.h"
 
-static int	key_press(int key_sym, void *param);
+static int	key_press(int key_sym, t_game *game);
 static int	button_x_on_window(void *param);
 
 void	initiate_mlx(t_game *game)
@@ -26,20 +26,21 @@ void	initiate_mlx(t_game *game)
 		exit(1);
 	}
 	mlx_hook(game->win_struct, 2, 1L<<0, key_press, game); // key press. 1L<<0 mask, means KeyPress. 2 event means KeyPress
+	// could also use mlx_key_hook(game->win_struct, key_press, game);
 	mlx_hook(game->win_struct, 17, 1L<<0, button_x_on_window, game); // window close button (X) pressed - 17 event is DestroyNotify
 	//mlx_hook(game->win_struct, 3, 1L<<1, key_press, game); // key release. 1L<<1 mask, means KeyRelease. 3 event means KeyRelease
 	mlx_loop(game->mlx_struct); // function that keeps the window open and listens for events.
 	//events: key presses, mouse movements, window close, etc.
 }
 
-// keysyms are better than keycodes for portability, because keycodes can vary between systems
-static int	key_press(int key_sym, void *param)
+// keysymbolics are better than keycodes for portability, because keycodes can vary between systems since keycode is hardware specific
+// whereas keysymol is more abstract and represents the actual character or function of the key
+static int	key_press(int key_sym, t_game *game)
 {
-	t_game *g = (t_game *)param;
 	/* Global ESC behavior */
 	if (key_sym == XK_Escape) // ESC key code == 65307, key_sym == XK_Escape == 0xff1b
 	{
-		free_game(g);
+		free_game(game);
 		exit(0);
 	}
 	return (0);
