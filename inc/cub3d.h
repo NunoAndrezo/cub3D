@@ -8,6 +8,20 @@
 #define WHEIGHT 1000
 #endif
 
+/* size in pixels to draw each map cell when drawing the top-down map.
+ * Increase to make the map bigger on screen. */
+#ifndef TILE_SIZE
+#define TILE_SIZE 32
+#endif
+
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 #include <X11/keysym.h> // for keysyms like XK_Escape
 #include <unistd.h>
 #include <stdlib.h>
@@ -20,6 +34,29 @@
 #include "../inc/get_next_line.h"
 #include "../minilibx-linux/mlx.h"
 
+enum e_colors
+{
+	COLOR_BLACK = 0x000000,
+	COLOR_WHITE = 0xFFFFFF,
+	COLOR_RED = 0xFF0000,
+	COLOR_GREEN = 0x00FF00,
+	COLOR_BLUE = 0x0000FF,
+	COLOR_YELLOW = 0xFFFF00,
+	COLOR_CYAN = 0x00FFFF,
+	COLOR_MAGENTA = 0xFF00FF
+};
+
+enum e_game_colors
+{
+	PLAYER_COLOR = COLOR_GREEN,
+	NORTH_WALL_COLOR = COLOR_WHITE,
+	SOUTH_WALL_COLOR = COLOR_RED,
+	EAST_WALL_COLOR = COLOR_BLUE,
+	WEST_WALL_COLOR = COLOR_YELLOW,
+	FLOOR_COLOR = 0x808080,
+	CEILING_COLOR = 0xC0C0C0
+};
+
 
 enum e_game_state
 {
@@ -29,12 +66,12 @@ enum e_game_state
 	STATE_PAUSED
 };
 
-enum e_texture_index
+enum e_texture_index // use this or use e_game_colors?
 {
-	NORTH = 0,
-	SOUTH = 1,
-	EAST = 2,
-	WEST = 3
+	NORTH_TEXTURE = 0,
+	SOUTH_TEXTURE = 1,
+	EAST_TEXTURE = 2,
+	WEST_TEXTURE = 3
 };
 
 /* simple image container */
@@ -45,6 +82,8 @@ typedef struct s_img
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;
+	int		width;
+	int		height;
 }	t_img;
 
 typedef struct	s_map
@@ -52,8 +91,8 @@ typedef struct	s_map
 	char	**map;
 	char	*map_file;
 	char	player_orientation;
-	int		player_start_x;
-	int		player_start_y;
+	float		player_start_x;
+	float		player_start_y;
 	int		y_max;
 
 }				t_map;
@@ -101,8 +140,6 @@ typedef struct	s_game
 	void				*win_struct;
 	int					win_w; /* current window width */
 	int					win_h; /* current window height */
-	enum e_game_state		state;
-	enum e_texture_index	textures[4]; // or int **textures; --- IGNORE ---
 	t_img				image;
 }				t_game;
 
