@@ -13,6 +13,21 @@
 #ifndef TILE_SIZE
 #define TILE_SIZE 32
 #endif
+#ifndef FOV_ANGLE
+#define FOV_ANGLE 60.0
+#endif
+#ifndef NUM_RAYS
+#define NUM_RAYS WWIDTH
+#endif
+#ifndef MOVE_SPEED
+#define MOVE_SPEED 0.1
+#endif
+#ifndef ROTATE_SPEED
+#define ROTATE_SPEED 0.05
+#endif
+#ifndef PLAYER_TILE_SIZE
+#define PLAYER_TILE_SIZE 16
+#endif
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -78,7 +93,7 @@ enum e_texture_index // use this or use e_game_colors?
 typedef struct s_img
 {
 	void	*img_ptr;
-	char	*img_pixels_ptr;
+	void	*img_pixels_ptr;
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;

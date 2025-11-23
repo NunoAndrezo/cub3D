@@ -4,6 +4,7 @@ static int	key_press(int key_sym, t_game *game);
 static int	button_x_on_window(void *param);
 static void	draw_game(t_game *game); // forward declaration
 static void	redraw_game(t_game *game, int key_sym); // forward declaration
+static void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 
 void	initiate_mlx(t_game *game)
 {
@@ -32,15 +33,11 @@ void	initiate_mlx(t_game *game)
 	mlx_hook(game->win_struct, 17, 1L<<0, button_x_on_window, game); // window close button (X) pressed - 17 event is DestroyNotify
 	//mlx_hook(game->win_struct, 3, 1L<<1, key_press, game); // key release. 1L<<1 mask, means KeyRelease. 3 event means KeyRelease
 	
-	/*
-	gotta see if I need this!!
 	game->image.width = game->win_w;
 	game->image.height = game->win_h;
 	game->image.img_ptr = mlx_new_image(game->mlx_struct, game->win_w, game->win_h); // create the image buffer to draw on
 	game->image.bits_per_pixel = 32; // assuming 32 bits per pixel
 	game->image.img_pixels_ptr = mlx_get_data_addr(game->image.img_ptr, &game->image.bits_per_pixel, &game->image.line_length, &game->image.endian);
-	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0); // put the image buffer to the window
-*/
 	draw_game(game); // draw the initial game state
 	mlx_loop(game->mlx_struct); // function that keeps the window open and listens for events.
 	//events: key presses, mouse movements, window close, etc.
@@ -48,8 +45,6 @@ void	initiate_mlx(t_game *game)
 
 static void	draw_game(t_game *game)
 {
-	float	px;
-	float	py;
 	int		j;
 	int		i;
 
@@ -68,18 +63,19 @@ static void	draw_game(t_game *game)
 				for (int xx = 0; xx < TILE_SIZE; ++xx)
 				{
 					//mlx_pixel_put(game->mlx_struct, game->win_struct, base_x + xx, base_y + yy, color);
-					// replace with my_pixel_put
+					// replace with my_store_pixel_in_image
 					// giving segmentation fault here, need to debug
-					int offset;
-					offset = game->image.line_length * (base_y + yy) + (base_x + xx) * (game->image.bits_per_pixel / 8);
-					*(unsigned int *)(game->image.img_pixels_ptr + offset) = color;
+					my_store_pixel_in_image(&game->image, base_x + xx, base_y + yy, color);
 				}
 			}
 			i++;
 		}
 		j++;
 	}
+	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0); // put the image buffer to the window
 	/* draw player as a filled TILE_SIZE square centered on player cell */
+	float	px;
+	float	py;
 	px = game->map.player_start_x;
 	py = game->map.player_start_y;
 	px *= TILE_SIZE;
@@ -93,13 +89,31 @@ static void	draw_game(t_game *game)
 			if ( px + xx >= 0 && px + xx < game->win_w && py + yy >= 0 && py + yy < game->win_h )
 			{
 					if (game->map.map[(int)(py / TILE_SIZE)][(int)(px / TILE_SIZE)] != '1') // only draw player if not inside a wall
-						mlx_pixel_put(game->mlx_struct, game->win_struct, px + xx, py + yy, PLAYER_COLOR);
+						my_store_pixel_in_image(&game->image, px + xx, py + yy, PLAYER_COLOR);
 			}
 			xx++;
 		}
 		xx = 0;
 		yy++;
 	}
+	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
+}
+
+// Detailed explanation:
+// This function calculates the memory offset for a pixel at coordinates (x, y) in the image.
+// it calculates the offset in the image's pixel data array using the formula:
+// offset = (line_length * y) + (x * (bits_per_pixel / 8))
+// Here, line_length is the number of bytes in a single row of pixels, y is the row number, x is the column number, and bits_per_pixel / 8 converts bits to bytes.
+// Finally, it stores the color value at the calculated offset by casting the offset pointer to an unsigned int pointer and dereferencing it to set the color
+static void	my_store_pixel_in_image(t_img *image, int x, int y, int color)
+{
+	
+	int	offset;
+
+	if (x < 0 || x >= image->width || y < 0 || y >= image->height)
+		return ; // out of bounds
+	offset = (image->line_length * y) + (x * (image->bits_per_pixel / 8));
+	*(unsigned int *)(image->img_pixels_ptr + offset) = color;
 }
 
 // keysymbolics are better than keycodes for portability, because keycodes can vary between systems since keycode is hardware specific
@@ -113,42 +127,58 @@ static int	key_press(int key_sym, t_game *game)
 		exit(0);
 	}
 	if (key_sym == XK_w || key_sym == XK_a || key_sym == XK_s || key_sym == XK_d)
-	{
-		mlx_clear_window(game->mlx_struct, game->win_struct);
 		redraw_game(game, key_sym);
-	}
 	return (0);
 }
 
 static void	redraw_game(t_game *game, int key_sym)
 {
 	// For simplicity, we will just clear the window and redraw the game state
-	
+	bool moved;
+
+	moved = false;
 	if (key_sym == XK_w)
 	{
 		// move player forward
 		if (game->map.map[(int)(game->map.player_start_y - 1)][(int)(game->map.player_start_x)] != '1') // only move if not into a wall
+		{
 			game->map.player_start_y -= 1;
+			mlx_clear_window(game->mlx_struct, game->win_struct);
+			moved = true;
+		}
 	}
 	else if (key_sym == XK_s)
 	{
 		// move player backward
 		if (game->map.map[(int)(game->map.player_start_y + 1)][(int)(game->map.player_start_x)] != '1') // only move if not into a wall
+		{
 			game->map.player_start_y += 1;
+			mlx_clear_window(game->mlx_struct, game->win_struct);
+			moved = true;
+		}
 	}
 	else if (key_sym == XK_a)
 	{
 		// move player left
 		if (game->map.map[(int)(game->map.player_start_y)][(int)(game->map.player_start_x - 1)] != '1') // only move if not into a wall
+		{
 			game->map.player_start_x -= 1;
+			mlx_clear_window(game->mlx_struct, game->win_struct);
+			moved = true;
+		}
 	}
 	else if (key_sym == XK_d)
 	{
 		// move player right
 		if (game->map.map[(int)(game->map.player_start_y)][(int)(game->map.player_start_x + 1)] != '1') // only move if not into a wall
+		{
 			game->map.player_start_x += 1;
+			mlx_clear_window(game->mlx_struct, game->win_struct);
+			moved = true;
+		}
 	}
-	draw_game(game);
+	if (moved)
+		draw_game(game);
 }
 
 static int	button_x_on_window(void *param)

@@ -15,6 +15,11 @@ void	free_game(t_game *game)
 		free(game->map.map);
 		game->map.map = NULL;
 	}
+	if (game->image.img_ptr)
+	{
+		mlx_destroy_image(game->mlx_struct, game->image.img_ptr);
+		game->image.img_ptr = NULL;
+	}
 	if (game->win_struct)
 	{
 		mlx_destroy_window(game->mlx_struct, game->win_struct);
