@@ -10,23 +10,8 @@
 
 /* size in pixels to draw each map cell when drawing the top-down map.
  * Increase to make the map bigger on screen. */
-#ifndef TILE_SIZE
-#define TILE_SIZE 32
-#endif
-#ifndef FOV_ANGLE
-#define FOV_ANGLE 60.0
-#endif
-#ifndef NUM_RAYS
-#define NUM_RAYS WWIDTH
-#endif
-#ifndef MOVE_SPEED
-#define MOVE_SPEED 0.1
-#endif
-#ifndef ROTATE_SPEED
-#define ROTATE_SPEED 0.05
-#endif
-#ifndef PLAYER_TILE_SIZE
-#define PLAYER_TILE_SIZE 16
+#ifndef ONE_TILE_SIDE
+#define ONE_TILE_SIDE 64
 #endif
 
 #define ANSI_COLOR_RED     "\x1b[31m"

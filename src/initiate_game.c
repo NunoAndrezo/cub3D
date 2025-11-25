@@ -33,11 +33,14 @@ void	initiate_mlx(t_game *game)
 	mlx_hook(game->win_struct, 17, 1L<<0, button_x_on_window, game); // window close button (X) pressed - 17 event is DestroyNotify
 	//mlx_hook(game->win_struct, 3, 1L<<1, key_press, game); // key release. 1L<<1 mask, means KeyRelease. 3 event means KeyRelease
 	
+	// we use this image buffer to draw the game state before putting it to the window, this way we avoid flickering since it's drawn off-screen first
 	game->image.width = game->win_w;
 	game->image.height = game->win_h;
 	game->image.img_ptr = mlx_new_image(game->mlx_struct, game->win_w, game->win_h); // create the image buffer to draw on
 	game->image.bits_per_pixel = 32; // assuming 32 bits per pixel
 	game->image.img_pixels_ptr = mlx_get_data_addr(game->image.img_ptr, &game->image.bits_per_pixel, &game->image.line_length, &game->image.endian);
+	//end of image buffer setup
+
 	draw_game(game); // draw the initial game state
 	mlx_loop(game->mlx_struct); // function that keeps the window open and listens for events.
 	//events: key presses, mouse movements, window close, etc.
@@ -62,9 +65,6 @@ static void	draw_game(t_game *game)
 			{
 				for (int xx = 0; xx < TILE_SIZE; ++xx)
 				{
-					//mlx_pixel_put(game->mlx_struct, game->win_struct, base_x + xx, base_y + yy, color);
-					// replace with my_store_pixel_in_image
-					// giving segmentation fault here, need to debug
 					my_store_pixel_in_image(&game->image, base_x + xx, base_y + yy, color);
 				}
 			}
@@ -72,7 +72,7 @@ static void	draw_game(t_game *game)
 		}
 		j++;
 	}
-	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0); // put the image buffer to the window
+//	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0); // put the image buffer to the window
 	/* draw player as a filled TILE_SIZE square centered on player cell */
 	float	px;
 	float	py;
