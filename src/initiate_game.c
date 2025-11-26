@@ -5,6 +5,7 @@ static int	button_x_on_window(void *param);
 static void	draw_game(t_game *game); // forward declaration
 static void	redraw_game(t_game *game, int key_sym); // forward declaration
 static void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
+static void draw_player(t_game *game);
 
 void	initiate_mlx(t_game *game)
 {
@@ -48,54 +49,45 @@ void	initiate_mlx(t_game *game)
 
 static void	draw_game(t_game *game)
 {
-	int		j;
-	int		i;
+	int	tile_y;
+	int	tile_x;
+	int world_x;
+	int world_y;
+	int	color;
 
-	j = 0;
-	/* draw each map cell as a TILE_SIZE x TILE_SIZE square so the map is larger on screen */
-	while (game->map.map[j])
+	tile_y = 0;
+	int xrow;
+	/* draw each map cell as a ONE_TILE_SIDE x ONE_TILE_SIDE square so the map is larger on screen */
+	while (game->map.map[tile_y])
 	{
-		i = 0;
-		while (game->map.map[j][i])
+		tile_x = 0;
+		xrow = ft_strlen(game->map.map[tile_y]);
+		while (tile_x < xrow)
 		{
-			int base_x = i * TILE_SIZE;
-			int base_y = j * TILE_SIZE;
-			int color = (game->map.map[j][i] == '1') ? COLOR_WHITE : COLOR_BLACK;
-			for (int yy = 0; yy < TILE_SIZE; ++yy)
+			world_y = tile_y * ONE_TILE_SIDE;
+			world_x = tile_x * ONE_TILE_SIDE;
+			if (game->map.map[tile_y][tile_x] == '1')
+				color = COLOR_WHITE; // wall
+			else
+				color = COLOR_BLACK; // empty space
+			// draw the square for this map cell
+			for (int y = 0; y < ONE_TILE_SIDE; y++)
+				for (int x = 0; x < ONE_TILE_SIDE; x++)
+					my_store_pixel_in_image(&game->image, world_x + x + 1, world_y + y + 1, color);
+			for (int i = 0; i < ONE_TILE_SIDE; i++)
 			{
-				for (int xx = 0; xx < TILE_SIZE; ++xx)
-				{
-					my_store_pixel_in_image(&game->image, base_x + xx, base_y + yy, color);
-				}
+				my_store_pixel_in_image(&game->image, world_x + i, world_y, COLOR_GREY);             // top
+				my_store_pixel_in_image(&game->image, world_x + i, world_y + ONE_TILE_SIDE - 1, COLOR_GREY); // bottom
+				my_store_pixel_in_image(&game->image, world_x, world_y + i, COLOR_GREY);             // left
+				my_store_pixel_in_image(&game->image, world_x + ONE_TILE_SIDE - 1, world_y + i, COLOR_GREY); // right
 			}
-			i++;
+			tile_x++;
 		}
-		j++;
+		tile_y++;
 	}
 //	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0); // put the image buffer to the window
-	/* draw player as a filled TILE_SIZE square centered on player cell */
-	float	px;
-	float	py;
-	px = game->map.player_start_x;
-	py = game->map.player_start_y;
-	px *= TILE_SIZE;
-	py *= TILE_SIZE;
-	float xx = 0;
-	float yy = 0;
-	while (yy < TILE_SIZE)
-	{
-		while (xx < TILE_SIZE)
-		{
-			if ( px + xx >= 0 && px + xx < game->win_w && py + yy >= 0 && py + yy < game->win_h )
-			{
-					if (game->map.map[(int)(py / TILE_SIZE)][(int)(px / TILE_SIZE)] != '1') // only draw player if not inside a wall
-						my_store_pixel_in_image(&game->image, px + xx, py + yy, PLAYER_COLOR);
-			}
-			xx++;
-		}
-		xx = 0;
-		yy++;
-	}
+	/* draw player as a filled ONE_TILE_SIDE square centered on player cell */
+	draw_player(game);
 	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
 }
 
@@ -107,7 +99,6 @@ static void	draw_game(t_game *game)
 // Finally, it stores the color value at the calculated offset by casting the offset pointer to an unsigned int pointer and dereferencing it to set the color
 static void	my_store_pixel_in_image(t_img *image, int x, int y, int color)
 {
-	
 	int	offset;
 
 	if (x < 0 || x >= image->width || y < 0 || y >= image->height)
@@ -133,53 +124,47 @@ static int	key_press(int key_sym, t_game *game)
 
 static void	redraw_game(t_game *game, int key_sym)
 {
-	// For simplicity, we will just clear the window and redraw the game state
-	bool moved;
+	float	nx = game->map.player_start_x;
+	float	ny = game->map.player_start_y;
 
-	moved = false;
+	// Move in fractional tile units
 	if (key_sym == XK_w)
-	{
-		// move player forward
-		if (game->map.map[(int)(game->map.player_start_y - 1)][(int)(game->map.player_start_x)] != '1') // only move if not into a wall
-		{
-			game->map.player_start_y -= 1;
-			mlx_clear_window(game->mlx_struct, game->win_struct);
-			moved = true;
-		}
-	}
+		ny -= 0.1f;
 	else if (key_sym == XK_s)
-	{
-		// move player backward
-		if (game->map.map[(int)(game->map.player_start_y + 1)][(int)(game->map.player_start_x)] != '1') // only move if not into a wall
-		{
-			game->map.player_start_y += 1;
-			mlx_clear_window(game->mlx_struct, game->win_struct);
-			moved = true;
-		}
-	}
+		ny += 0.1f;
 	else if (key_sym == XK_a)
-	{
-		// move player left
-		if (game->map.map[(int)(game->map.player_start_y)][(int)(game->map.player_start_x - 1)] != '1') // only move if not into a wall
-		{
-			game->map.player_start_x -= 1;
-			mlx_clear_window(game->mlx_struct, game->win_struct);
-			moved = true;
-		}
-	}
+		nx -= 0.1f;
 	else if (key_sym == XK_d)
+		nx += 0.1f;
+
+	// Check if new position is walkable
+	if (ny >= 0 && (int)ny < game->map.y_max &&
+		nx >= 0 && (int)nx < (int)ft_strlen(game->map.map[(int)ny]) &&
+		game->map.map[(int)ny][(int)nx] != '1')
 	{
-		// move player right
-		if (game->map.map[(int)(game->map.player_start_y)][(int)(game->map.player_start_x + 1)] != '1') // only move if not into a wall
-		{
-			game->map.player_start_x += 1;
-			mlx_clear_window(game->mlx_struct, game->win_struct);
-			moved = true;
-		}
-	}
-	if (moved)
+		game->map.player_start_x = nx;
+		game->map.player_start_y = ny;
+		mlx_clear_window(game->mlx_struct, game->win_struct);
 		draw_game(game);
+	}
 }
+
+static void draw_player(t_game *game)
+{
+	int	player_position_x;
+	int	player_position_y;
+	int	size;
+
+	size = 4; // half-size of player square
+	player_position_x = (int)(game->map.player_start_x * ONE_TILE_SIDE);
+	player_position_y = (int)(game->map.player_start_y * ONE_TILE_SIDE);
+
+	for (int y = -size; y < size; y++)
+		for (int x = -size; x < size; x++)
+			my_store_pixel_in_image(&game->image, player_position_x + x, player_position_y + y, COLOR_YELLOW);
+}
+
+
 
 static int	button_x_on_window(void *param)
 {

@@ -2,10 +2,14 @@
 #define CUB3D_H
 
 #ifndef WWIDTH
-#define WWIDTH 1920
+#define WWIDTH 1024
 #endif
 #ifndef WHEIGHT
-#define WHEIGHT 1000
+#define WHEIGHT 512
+#endif
+
+#ifndef PI_VALUE
+#define PI_VALUE 3.14159265
 #endif
 
 /* size in pixels to draw each map cell when drawing the top-down map.
@@ -29,7 +33,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdbool.h>
-# include <signal.h>
+#include <signal.h>
+#include <math.h>
 
 #include "../inc/get_next_line.h"
 #include "../minilibx-linux/mlx.h"
@@ -43,20 +48,9 @@ enum e_colors
 	COLOR_BLUE = 0x0000FF,
 	COLOR_YELLOW = 0xFFFF00,
 	COLOR_CYAN = 0x00FFFF,
-	COLOR_MAGENTA = 0xFF00FF
+	COLOR_MAGENTA = 0xFF00FF,
+	COLOR_GREY = 0x808080
 };
-
-enum e_game_colors
-{
-	PLAYER_COLOR = COLOR_GREEN,
-	NORTH_WALL_COLOR = COLOR_WHITE,
-	SOUTH_WALL_COLOR = COLOR_RED,
-	EAST_WALL_COLOR = COLOR_BLUE,
-	WEST_WALL_COLOR = COLOR_YELLOW,
-	FLOOR_COLOR = 0x808080,
-	CEILING_COLOR = 0xC0C0C0
-};
-
 
 enum e_game_state
 {
