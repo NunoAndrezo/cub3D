@@ -6,6 +6,8 @@ static void	draw_game(t_game *game); // forward declaration
 static void	redraw_game(t_game *game, int key_sym); // forward declaration
 static void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 static void draw_player(t_game *game);
+static void initiate_player(t_game *game);
+
 
 void	initiate_mlx(t_game *game)
 {
@@ -29,6 +31,8 @@ void	initiate_mlx(t_game *game)
 		// we need a clean exit function here
 		exit(1);
 	}
+	initiate_player(game);
+	ft_bzero(&game->ray, sizeof(t_ray));
 	mlx_hook(game->win_struct, 2, 1L<<0, key_press, game); // key press. 1L<<0 mask, means KeyPress. 2 event means KeyPress
 	// could also use mlx_key_hook(game->win_struct, key_press, game);
 	mlx_hook(game->win_struct, 17, 1L<<0, button_x_on_window, game); // window close button (X) pressed - 17 event is DestroyNotify
@@ -45,6 +49,45 @@ void	initiate_mlx(t_game *game)
 	draw_game(game); // draw the initial game state
 	mlx_loop(game->mlx_struct); // function that keeps the window open and listens for events.
 	//events: key presses, mouse movements, window close, etc.
+}
+
+static void	initiate_player(t_game *game)
+{
+	game->player.pos_x = game->map.player_start_x + 0.5; // center of the tile
+	game->player.pos_y = game->map.player_start_y + 0.5; // center of the tile
+	game->player.has_moved = 0;
+	game->player.move_x = 0;
+	game->player.move_y = 0;
+	game->player.rotate = 0;
+	game->player.dir = game->map.player_orientation;
+	if (game->player.dir == 'N')
+	{
+		game->player.dir_x = 0.0;
+		game->player.dir_y = -1.0;
+		game->player.plane_x = 0.66;
+		game->player.plane_y = 0.0;
+	}
+	else if (game->player.dir == 'S')
+	{
+		game->player.dir_x = 0.0;
+		game->player.dir_y = 1.0;
+		game->player.plane_x = -0.66;
+		game->player.plane_y = 0.0;
+	}
+	else if (game->player.dir == 'E')
+	{
+		game->player.dir_x = 1.0;
+		game->player.dir_y = 0.0;
+		game->player.plane_x = 0.0;
+		game->player.plane_y = 0.66;
+	}
+	else if (game->player.dir == 'W')
+	{
+		game->player.dir_x = -1.0;
+		game->player.dir_y = 0.0;
+		game->player.plane_x = 0.0;
+		game->player.plane_y = -0.66;
+	}
 }
 
 static void	draw_game(t_game *game)
@@ -73,12 +116,12 @@ static void	draw_game(t_game *game)
 			// draw the square for this map cell
 			for (int y = 0; y < ONE_TILE_SIDE; y++)
 				for (int x = 0; x < ONE_TILE_SIDE; x++)
-					my_store_pixel_in_image(&game->image, world_x + x + 1, world_y + y + 1, color);
+					my_store_pixel_in_image(&game->image, world_x + x, world_y + y, color);
 			for (int i = 0; i < ONE_TILE_SIDE; i++)
 			{
-				my_store_pixel_in_image(&game->image, world_x + i, world_y, COLOR_GREY);             // top
+				my_store_pixel_in_image(&game->image, world_x + i, world_y, COLOR_GREY); // top
 				my_store_pixel_in_image(&game->image, world_x + i, world_y + ONE_TILE_SIDE - 1, COLOR_GREY); // bottom
-				my_store_pixel_in_image(&game->image, world_x, world_y + i, COLOR_GREY);             // left
+				my_store_pixel_in_image(&game->image, world_x, world_y + i, COLOR_GREY); // left
 				my_store_pixel_in_image(&game->image, world_x + ONE_TILE_SIDE - 1, world_y + i, COLOR_GREY); // right
 			}
 			tile_x++;
@@ -124,8 +167,8 @@ static int	key_press(int key_sym, t_game *game)
 
 static void	redraw_game(t_game *game, int key_sym)
 {
-	float	nx = game->map.player_start_x;
-	float	ny = game->map.player_start_y;
+	float	nx = game->player.pos_x;
+	float	ny = game->player.pos_y;
 
 	// Move in fractional tile units
 	if (key_sym == XK_w)
@@ -140,10 +183,10 @@ static void	redraw_game(t_game *game, int key_sym)
 	// Check if new position is walkable
 	if (ny >= 0 && (int)ny < game->map.y_max &&
 		nx >= 0 && (int)nx < (int)ft_strlen(game->map.map[(int)ny]) &&
-		game->map.map[(int)ny][(int)nx] != '1')
+		game->map.map[(int)(ny)][(int)(nx)] != '1')
 	{
-		game->map.player_start_x = nx;
-		game->map.player_start_y = ny;
+		game->player.pos_x = nx;
+		game->player.pos_y = ny;
 		mlx_clear_window(game->mlx_struct, game->win_struct);
 		draw_game(game);
 	}
@@ -151,17 +194,17 @@ static void	redraw_game(t_game *game, int key_sym)
 
 static void draw_player(t_game *game)
 {
-	int	player_position_x;
-	int	player_position_y;
 	int	size;
+	int player_pixel_x;
+	int player_pixel_y;
 
-	size = 4; // half-size of player square
-	player_position_x = (int)(game->map.player_start_x * ONE_TILE_SIDE);
-	player_position_y = (int)(game->map.player_start_y * ONE_TILE_SIDE);
+	size = 3; // half-size of player square
+	player_pixel_x = (int)(game->player.pos_x * ONE_TILE_SIDE);
+	player_pixel_y = (int)(game->player.pos_y * ONE_TILE_SIDE);
 
 	for (int y = -size; y < size; y++)
 		for (int x = -size; x < size; x++)
-			my_store_pixel_in_image(&game->image, player_position_x + x, player_position_y + y, COLOR_YELLOW);
+			my_store_pixel_in_image(&game->image, player_pixel_x + x, player_pixel_y + y, COLOR_YELLOW);
 }
 
 

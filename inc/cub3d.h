@@ -15,7 +15,7 @@
 /* size in pixels to draw each map cell when drawing the top-down map.
  * Increase to make the map bigger on screen. */
 #ifndef ONE_TILE_SIDE
-#define ONE_TILE_SIDE 64
+#define ONE_TILE_SIDE 32
 #endif
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -102,8 +102,8 @@ typedef struct s_ray
 	int		step_y; // direction to step in x and y (either +1 or -1)
 	double	sidedist_x; // means length of ray from current position to next x or y-side
 	double	sidedist_y; // means length of ray from current position to next x or y-side
-	double	deltadist_x; // length of ray from one x or y-side to next x or y-side
-	double	deltadist_y; // length of ray from one x or y-side to next x or y-side
+	double	delta_x; // length of ray from one x or y-side to next x or y-side
+	double	delta_y; // length of ray from one x or y-side to next x or y-side
 	double	wall_dist; // perpendicular distance from the ray to the wall
 	double	wall_x;    // where exactly the wall was hit
 	int		side;			 // was a NS or a EW wall hit?
@@ -135,6 +135,8 @@ typedef struct	s_game
 	int					win_w; /* current window width */
 	int					win_h; /* current window height */
 	t_img				image;
+	t_player			player;
+	t_ray				ray;
 }				t_game;
 
 //parsing.c
