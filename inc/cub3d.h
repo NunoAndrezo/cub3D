@@ -2,10 +2,10 @@
 #define CUB3D_H
 
 #ifndef WWIDTH
-#define WWIDTH 1024
+#define WWIDTH 1999
 #endif
 #ifndef WHEIGHT
-#define WHEIGHT 512
+#define WHEIGHT 99999
 #endif
 
 #ifndef PI_VALUE
@@ -125,6 +125,8 @@ typedef struct s_player
 	int		move_x;
 	int		move_y;
 	int		rotate;
+	/* collision radius in tiles (fraction of ONE_TILE_SIDE). e.g. 0.3 means 30% of tile */
+	double	player_radius;
 }	t_player;
 
 typedef struct	s_game

@@ -3,10 +3,11 @@
 static int	key_press(int key_sym, t_game *game);
 static int	button_x_on_window(void *param);
 static void	draw_game(t_game *game); // forward declaration
-static void	redraw_game(t_game *game, int key_sym); // forward declaration
+static void	change_player_pos(t_game *game, int key_sym); // forward declaration
 static void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 static void draw_player(t_game *game);
 static void initiate_player(t_game *game);
+static int game_loop(void *param);
 
 
 void	initiate_mlx(t_game *game)
@@ -15,7 +16,7 @@ void	initiate_mlx(t_game *game)
 	if (!game->mlx_struct)
 	{
 		perror("mlx_init failed");
-		// we need a clean exit function here
+		free_game(game);
 		exit(1);
 	}
 	game->win_w = WWIDTH;
@@ -28,7 +29,7 @@ void	initiate_mlx(t_game *game)
 	if (!game->win_struct)
 	{
 		perror("mlx_new_window failed");
-		// we need a clean exit function here
+		free_game(game);
 		exit(1);
 	}
 	initiate_player(game);
@@ -42,13 +43,26 @@ void	initiate_mlx(t_game *game)
 	game->image.width = game->win_w;
 	game->image.height = game->win_h;
 	game->image.img_ptr = mlx_new_image(game->mlx_struct, game->win_w, game->win_h); // create the image buffer to draw on
-	game->image.bits_per_pixel = 32; // assuming 32 bits per pixel
+	game->image.bits_per_pixel = ONE_TILE_SIDE;
 	game->image.img_pixels_ptr = mlx_get_data_addr(game->image.img_ptr, &game->image.bits_per_pixel, &game->image.line_length, &game->image.endian);
 	//end of image buffer setup
 
-	draw_game(game); // draw the initial game state
+	mlx_loop_hook(game->mlx_struct, game_loop, game); // set the loop hook to update the game frame
 	mlx_loop(game->mlx_struct); // function that keeps the window open and listens for events.
 	//events: key presses, mouse movements, window close, etc.
+}
+
+static int game_loop(void *param)
+{
+	t_game *game = (t_game *)param;
+
+	// Here we would update the game state, e.g. move player based on input
+	// So what is missing? I need to handle rotation of the player too
+	mlx_clear_window(game->mlx_struct, game->win_struct);
+	draw_game(game);
+	draw_player(game);
+	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
+	return (0);
 }
 
 static void	initiate_player(t_game *game)
@@ -117,6 +131,7 @@ static void	draw_game(t_game *game)
 			for (int y = 0; y < ONE_TILE_SIDE; y++)
 				for (int x = 0; x < ONE_TILE_SIDE; x++)
 					my_store_pixel_in_image(&game->image, world_x + x, world_y + y, color);
+			// draw cell borders
 			for (int i = 0; i < ONE_TILE_SIDE; i++)
 			{
 				my_store_pixel_in_image(&game->image, world_x + i, world_y, COLOR_GREY); // top
@@ -128,10 +143,6 @@ static void	draw_game(t_game *game)
 		}
 		tile_y++;
 	}
-//	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0); // put the image buffer to the window
-	/* draw player as a filled ONE_TILE_SIDE square centered on player cell */
-	draw_player(game);
-	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
 }
 
 // Detailed explanation:
@@ -161,15 +172,23 @@ static int	key_press(int key_sym, t_game *game)
 		exit(0);
 	}
 	if (key_sym == XK_w || key_sym == XK_a || key_sym == XK_s || key_sym == XK_d)
-		redraw_game(game, key_sym);
+		change_player_pos(game, key_sym);
+	if (key_sym == XK_Left)
+		game->player.rotate = -1;
+	else if (key_sym == XK_Right)
+		game->player.rotate = 1;
+	else
+		game->player.rotate = 0;
 	return (0);
 }
 
-static void	redraw_game(t_game *game, int key_sym)
+static void	change_player_pos(t_game *game, int key_sym)
 {
-	float	nx = game->player.pos_x;
-	float	ny = game->player.pos_y;
+	float	nx;
+	float	ny;
 
+	nx = game->player.pos_x;
+	ny = game->player.pos_y;
 	// Move in fractional tile units
 	if (key_sym == XK_w)
 		ny -= 0.1f;
@@ -179,7 +198,6 @@ static void	redraw_game(t_game *game, int key_sym)
 		nx -= 0.1f;
 	else if (key_sym == XK_d)
 		nx += 0.1f;
-
 	// Check if new position is walkable
 	if (ny >= 0 && (int)ny < game->map.y_max &&
 		nx >= 0 && (int)nx < (int)ft_strlen(game->map.map[(int)ny]) &&
@@ -187,27 +205,33 @@ static void	redraw_game(t_game *game, int key_sym)
 	{
 		game->player.pos_x = nx;
 		game->player.pos_y = ny;
-		mlx_clear_window(game->mlx_struct, game->win_struct);
-		draw_game(game);
 	}
 }
 
 static void draw_player(t_game *game)
 {
 	int	size;
-	int player_pixel_x;
-	int player_pixel_y;
+	int	player_pixel_x;
+	int	player_pixel_y;
+	int	y;
+	int	x;
 
 	size = 3; // half-size of player square
 	player_pixel_x = (int)(game->player.pos_x * ONE_TILE_SIDE);
 	player_pixel_y = (int)(game->player.pos_y * ONE_TILE_SIDE);
-
-	for (int y = -size; y < size; y++)
-		for (int x = -size; x < size; x++)
+	y = -size;
+	x = -size;
+	while (y <= size)
+	{
+		x = -size;
+		while (x <= size)
+		{
 			my_store_pixel_in_image(&game->image, player_pixel_x + x, player_pixel_y + y, COLOR_YELLOW);
+			x++;
+		}
+		y++;
+	}
 }
-
-
 
 static int	button_x_on_window(void *param)
 {
