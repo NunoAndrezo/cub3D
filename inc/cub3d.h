@@ -125,8 +125,11 @@ typedef struct s_player
 	int		move_x;
 	int		move_y;
 	int		rotate;
-	/* collision radius in tiles (fraction of ONE_TILE_SIDE). e.g. 0.3 means 30% of tile */
-	double	player_radius;
+	int		move_speed; /* movement speed in pixels per frame */
+	float	player_delta_x; /* movement delta in x direction per frame */
+	float	player_delta_y; /* movement delta in y direction per frame */
+	float	player_angle; /* player viewing angle in degrees */
+	float	player_radius; // collision radius in tiles (fraction of ONE_TILE_SIDE). e.g. 0.3 means 30% of tile
 }	t_player;
 
 typedef struct	s_game

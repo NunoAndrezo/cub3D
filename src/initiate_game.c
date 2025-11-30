@@ -8,7 +8,7 @@ static void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 static void draw_player(t_game *game);
 static void initiate_player(t_game *game);
 static int game_loop(void *param);
-
+static void lets_see_them_rays(t_game *game); // forward declaration
 
 void	initiate_mlx(t_game *game)
 {
@@ -34,6 +34,7 @@ void	initiate_mlx(t_game *game)
 	}
 	initiate_player(game);
 	ft_bzero(&game->ray, sizeof(t_ray));
+	lets_see_them_rays(game);
 	mlx_hook(game->win_struct, 2, 1L<<0, key_press, game); // key press. 1L<<0 mask, means KeyPress. 2 event means KeyPress
 	// could also use mlx_key_hook(game->win_struct, key_press, game);
 	mlx_hook(game->win_struct, 17, 1L<<0, button_x_on_window, game); // window close button (X) pressed - 17 event is DestroyNotify
@@ -58,7 +59,6 @@ static int game_loop(void *param)
 
 	// Here we would update the game state, e.g. move player based on input
 	// So what is missing? I need to handle rotation of the player too
-	mlx_clear_window(game->mlx_struct, game->win_struct);
 	draw_game(game);
 	draw_player(game);
 	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
@@ -67,19 +67,20 @@ static int game_loop(void *param)
 
 static void	initiate_player(t_game *game)
 {
+	ft_bzero(&game->player, sizeof(t_player));
 	game->player.pos_x = game->map.player_start_x + 0.5; // center of the tile
 	game->player.pos_y = game->map.player_start_y + 0.5; // center of the tile
-	game->player.has_moved = 0;
-	game->player.move_x = 0;
-	game->player.move_y = 0;
-	game->player.rotate = 0;
 	game->player.dir = game->map.player_orientation;
+	//game->player.move_speed = 5; // pixels per frame
+	game->player.player_radius = 0.3; // 30% of tile size
+	game->player.move_speed = 5; // pixels per frame
 	if (game->player.dir == 'N')
 	{
 		game->player.dir_x = 0.0;
 		game->player.dir_y = -1.0;
 		game->player.plane_x = 0.66;
 		game->player.plane_y = 0.0;
+		game->player.player_angle = 3.0f * PI_VALUE / 2.0f; // facing up
 	}
 	else if (game->player.dir == 'S')
 	{
@@ -87,6 +88,7 @@ static void	initiate_player(t_game *game)
 		game->player.dir_y = 1.0;
 		game->player.plane_x = -0.66;
 		game->player.plane_y = 0.0;
+		game->player.player_angle = PI_VALUE / 2.0f; // facing down
 	}
 	else if (game->player.dir == 'E')
 	{
@@ -94,6 +96,7 @@ static void	initiate_player(t_game *game)
 		game->player.dir_y = 0.0;
 		game->player.plane_x = 0.0;
 		game->player.plane_y = 0.66;
+		game->player.player_angle = 0.0f; // facing right
 	}
 	else if (game->player.dir == 'W')
 	{
@@ -101,7 +104,10 @@ static void	initiate_player(t_game *game)
 		game->player.dir_y = 0.0;
 		game->player.plane_x = 0.0;
 		game->player.plane_y = -0.66;
+		game->player.player_angle = PI_VALUE; // facing left
 	}
+	game->player.player_delta_x = cos(game->player.player_angle) * (game->player.move_speed);
+	game->player.player_delta_y = sin(game->player.player_angle) * (game->player.move_speed);
 }
 
 static void	draw_game(t_game *game)
@@ -171,14 +177,31 @@ static int	key_press(int key_sym, t_game *game)
 		free_game(game);
 		exit(0);
 	}
-	if (key_sym == XK_w || key_sym == XK_a || key_sym == XK_s || key_sym == XK_d)
+	if (key_sym == XK_w)
+		change_player_pos(game, key_sym);
+	if (key_sym == XK_a)
+		change_player_pos(game, key_sym);
+	if (key_sym == XK_s)
+		change_player_pos(game, key_sym);
+	if (key_sym == XK_d)
 		change_player_pos(game, key_sym);
 	if (key_sym == XK_Left)
-		game->player.rotate = -1;
-	else if (key_sym == XK_Right)
-		game->player.rotate = 1;
-	else
-		game->player.rotate = 0;
+	{
+		game->player.player_angle -= 0.1f;
+				game->player.player_angle -= 0.1f;
+		if (game->player.player_angle < 0)
+			game->player.player_angle += 2.0f * PI_VALUE;
+		game->player.player_delta_x = cos(game->player.player_angle) * (game->player.move_speed);
+		game->player.player_delta_y = sin(game->player.player_angle) * (game->player.move_speed);
+	}
+	if (key_sym == XK_Right)
+	{
+		game->player.player_angle += 0.1f;
+		if (game->player.player_angle > 2.0f * PI_VALUE)
+			game->player.player_angle -= 2.0f * PI_VALUE;
+		game->player.player_delta_x = -cos(game->player.player_angle) * (game->player.move_speed);
+		game->player.player_delta_y = -sin(game->player.player_angle) * (game->player.move_speed);
+	}
 	return (0);
 }
 
@@ -190,14 +213,14 @@ static void	change_player_pos(t_game *game, int key_sym)
 	nx = game->player.pos_x;
 	ny = game->player.pos_y;
 	// Move in fractional tile units
-	if (key_sym == XK_w)
-		ny -= 0.1f;
-	else if (key_sym == XK_s)
-		ny += 0.1f;
-	else if (key_sym == XK_a)
+	if (key_sym == XK_a)
 		nx -= 0.1f;
 	else if (key_sym == XK_d)
 		nx += 0.1f;
+	else if (key_sym == XK_w)
+		ny -= 0.1f;
+	else if (key_sym == XK_s)
+		ny += 0.1f;
 	// Check if new position is walkable
 	if (ny >= 0 && (int)ny < game->map.y_max &&
 		nx >= 0 && (int)nx < (int)ft_strlen(game->map.map[(int)ny]) &&
@@ -206,6 +229,14 @@ static void	change_player_pos(t_game *game, int key_sym)
 		game->player.pos_x = nx;
 		game->player.pos_y = ny;
 	}
+}
+
+static void lets_see_them_rays(t_game *game)
+{
+	// This function is a placeholder for future raycasting logic
+	// It will calculate and visualize rays from the player's position
+	// to demonstrate the raycasting process in the 2D map
+	(void)game; // to avoid unused parameter warning
 }
 
 static void draw_player(t_game *game)
@@ -221,6 +252,14 @@ static void draw_player(t_game *game)
 	player_pixel_y = (int)(game->player.pos_y * ONE_TILE_SIDE);
 	y = -size;
 	x = -size;
+	// lets draw my angle line
+	for (int i = 0; i < 15; i++)
+	{
+		int line_x = player_pixel_x + (int)(cos(game->player.player_angle) * i);
+		int line_y = player_pixel_y + (int)(sin(game->player.player_angle) * i);
+		my_store_pixel_in_image(&game->image, line_x, line_y, COLOR_RED);
+	}
+	// now draw the player as a square
 	while (y <= size)
 	{
 		x = -size;
