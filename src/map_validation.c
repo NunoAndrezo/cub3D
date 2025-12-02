@@ -35,6 +35,14 @@ static bool	check_player(t_game *game)
 				game->map.player_start_x = i;
 				game->map.player_start_y = j;
 			}
+			if (game->map.map[j][i] != '0' && game->map.map[j][i] != '1' && game->map.map[j][i] != ' ' &&
+				game->map.map[j][i] != 'N' && game->map.map[j][i] != 'S' &&
+				game->map.map[j][i] != 'E' && game->map.map[j][i] != 'W')
+			{
+				fprintf(stderr, "Error: Invalid character '%c' in map at (%d, %d)\n", game->map.map[j][i], j, i);
+				free_game(game);
+				exit(EXIT_FAILURE);
+			}
 			i++;
 		}
 		j++;

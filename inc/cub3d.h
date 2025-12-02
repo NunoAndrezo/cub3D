@@ -19,7 +19,7 @@
 /* size in pixels to draw each map cell when drawing the top-down map.
  * Increase to make the map bigger on screen. */
 #ifndef ONE_TILE_SIDE
-#define ONE_TILE_SIDE 32
+#define ONE_TILE_SIDE 16
 #endif
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -139,10 +139,11 @@ typedef struct	s_game
 	t_img				bg_image;
 	/* rendering config moved into player/ray structs */
 	t_player			player;
-	t_ray				ray;
 	float				max_distance;
 	uint64_t			start_time;
 	uint64_t			delta_time;
+	float				final_distance;
+	t_ray				ray;
 }				t_game;
 
 //parsing.c
