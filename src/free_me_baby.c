@@ -20,6 +20,12 @@ void	free_game(t_game *game)
 		mlx_destroy_image(game->mlx_struct, game->image.img_ptr);
 		game->image.img_ptr = NULL;
 	}
+	/* destroy background image if allocated */
+	if (game->bg_image.img_ptr)
+	{
+		mlx_destroy_image(game->mlx_struct, game->bg_image.img_ptr);
+		game->bg_image.img_ptr = NULL;
+	}
 	if (game->win_struct)
 	{
 		mlx_destroy_window(game->mlx_struct, game->win_struct);

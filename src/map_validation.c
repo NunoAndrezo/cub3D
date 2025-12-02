@@ -48,3 +48,47 @@ static bool	is_map_playable(t_game *game)
 {
 	return (flood_fill(game));
 }
+
+bool last_map_adjustments(t_game *game)
+{
+	int	j;
+	int	i;
+	int	max_len;
+	char *new_row;
+
+	j = 0;
+	max_len = 0;
+	while (j < game->map.y_max)
+	{
+		i = 0;
+		while (game->map.map[j][i])
+			i++;
+		if (i > max_len)
+			max_len = i;
+		j++;
+	}
+	j = 0;
+	while (j < game->map.y_max)
+	{
+		i = 0;
+		while (game->map.map[j][i])
+		{
+			if ((int)ft_strlen(game->map.map[j]) < max_len)
+			{
+				// pad with spaces
+				while ((int)ft_strlen(game->map.map[j]) < max_len)
+				{
+					new_row = ft_strjoin_char(game->map.map[j], ' ');
+					if (new_row == NULL)
+						return (false);
+					free(game->map.map[j]);
+					game->map.map[j] = new_row;
+				}
+			}
+			i++;
+		}
+		j++;
+	}
+	game->map.x_max = max_len;
+	return (true);
+}

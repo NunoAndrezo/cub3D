@@ -5,17 +5,17 @@ static int	key_release(int key_sym, t_game *game);
 
 static int	button_x_on_window(void *param);
 
-static int game_loop(void *param);
-static void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
-
-static void	draw_game(t_game *game);
-static void initiate_player(t_game *game);
-static void draw_player(t_game *game);
-static void lets_see_them_rays(t_game *game);
-static void change_player_rot(t_game *game);
-static void change_player_mov(t_game *game);
-static bool is_colision(t_game *game, float nx, float ny);
-static bool check_diagonally_strafing(t_game *game);
+static int	game_loop(t_game *game);
+static int	main_loop(t_game *game);
+static void	update_game(t_game *game);
+static void	draw_map_to_image(t_game *game, t_img *target);
+static void	initiate_player(t_game *game);
+static void	draw_player(t_game *game);
+static void	change_player_rot(t_game *game);
+static void	change_player_mov(t_game *game);
+static bool	is_colision(t_game *game, float nx, float ny);
+static bool	check_diagonally_strafing(t_game *game);
+uint64_t	get_time_in_ms(void);
 
 void	initiate_mlx(t_game *game)
 {
@@ -39,9 +39,10 @@ void	initiate_mlx(t_game *game)
 		free_game(game);
 		exit(1);
 	}
+	game->max_distance = sqrt((game->win_w * ONE_TILE_SIDE) * (game->win_w * ONE_TILE_SIDE) + (game->win_h * ONE_TILE_SIDE) * (game->win_h * ONE_TILE_SIDE));
+	game->start_time = get_time_in_ms();
 	initiate_player(game);
 	ft_bzero(&game->ray, sizeof(t_ray));
-	lets_see_them_rays(game);
 	mlx_hook(game->win_struct, 2, 1L<<0, key_press, game); // key press. 1L<<0 mask, means KeyPress. 2 event means KeyPress
 	// could also use mlx_key_hook(game->win_struct, key_press, game);
 	mlx_hook(game->win_struct, 3, 1L<<1, key_release, game); // key release. 1L<<1 mask, means KeyRelease. 3 event means KeyRelease
@@ -56,25 +57,97 @@ void	initiate_mlx(t_game *game)
 	game->image.img_pixels_ptr = mlx_get_data_addr(game->image.img_ptr, &game->image.bits_per_pixel, &game->image.line_length, &game->image.endian);
 	//end of image buffer setup
 
-	mlx_loop_hook(game->mlx_struct, game_loop, game); // set the loop hook to update the game frame
+	/* create a background image and render the static map into it once */
+	game->bg_image.width = game->win_w;
+	game->bg_image.height = game->win_h;
+	game->bg_image.img_ptr = mlx_new_image(game->mlx_struct, game->win_w, game->win_h);
+	game->bg_image.bits_per_pixel = ONE_TILE_SIDE;
+	game->bg_image.img_pixels_ptr = mlx_get_data_addr(game->bg_image.img_ptr, &game->bg_image.bits_per_pixel, &game->bg_image.line_length, &game->bg_image.endian);
+
+	/* draw map once into background */
+	draw_map_to_image(game, &game->bg_image);
+
+	mlx_loop_hook(game->mlx_struct, main_loop, game); // set the loop hook to update the game frame
 	mlx_loop(game->mlx_struct); // function that keeps the window open and listens for events.
 	//events: key presses, mouse movements, window close, etc.
 }
 
-static int game_loop(void *param)
+static int game_loop(t_game *game)
 {
-	t_game *game = (t_game *)param;
-
 	// Here we would update the game state, e.g. move player based on input
 	// So what is missing? I need to handle rotation of the player too
-	//mlx_clear_window(game->mlx_struct, game->win_struct);
-	draw_game(game);
-	change_player_rot(game);
-	change_player_mov(game);
+	/*
+	 * Fast per-frame background restore:
+	 * We render the static top-down map once into `game->bg_image` at startup
+	 * (see `draw_map_to_image`) and then copy that full image into the
+	 * frame buffer each frame before drawing dynamic items (player, rays).
+	 *
+	 * Rationale:
+	 * - A single block copy (`ft_memcpy`) of the pixel memory is far faster
+	 *   than redrawing every static pixel or doing a per-pixel clear loop.
+	 * - We copy `line_length * height` bytes, which matches the layout
+	 *   returned by `mlx_get_data_addr` (`img_pixels_ptr`). This preserves
+	 *   the exact row stride and pixel format used by the MLX image.
+	 * - We use our fast `ft_memcpy` implementation (word-sized copies) to
+	 *   avoid the system `memcpy` while keeping high performance.
+	 *
+	 * Notes:
+	 * - If you later switch to partial redraws or don't fill every pixel,
+	 *   you may need to clear regions explicitly. Currently the background
+	 *   copy ensures every pixel is initialized each frame.
+	 */
+	size_t row_bytes;
+
+	row_bytes = (size_t)game->image.line_length * (size_t)game->image.height;
+	if (game->bg_image.img_pixels_ptr && game->image.img_pixels_ptr)
+		ft_memcpy(game->image.img_pixels_ptr, game->bg_image.img_pixels_ptr, row_bytes);
+
+	/* draw dynamic elements on top of background */
 	draw_player(game);
+	lets_see_them_rays(game);
 	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
 	return (0);
 }
+
+uint64_t	get_time_in_ms(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((uint64_t)(tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+int	main_loop(t_game *game)
+{
+	uint64_t		current_time;
+	uint64_t		elapsed;
+	uint64_t		accu;
+
+	// reduce accumulator to ~2ms for ~500Hz updates
+	accu = 0;
+	current_time = get_time_in_ms();
+	elapsed = current_time - game->start_time;
+	game->start_time = current_time;
+	game->delta_time = elapsed;
+	accu += elapsed;
+	// Update game state at fixed intervals (~16 ms => ~60 updates/sec)
+	while (accu >= 16)
+	{
+		update_game(game);
+		accu -= 16;
+	}
+	game_loop(game);
+	return (0);
+}
+
+static void update_game(t_game *game)
+{
+	// Here we would update the game state, e.g. move player based on input
+	// So what is missing? I need to handle rotation of the player too
+	change_player_rot(game);
+	change_player_mov(game);
+}
+
 
 static void	initiate_player(t_game *game)
 {
@@ -83,29 +156,36 @@ static void	initiate_player(t_game *game)
 	game->player.pos_y = game->map.player_start_y + 0.5; // center of the tile
 	game->player.dir = game->map.player_orientation;
 	//game->player.move_speed = 5; // pixels per frame
-	game->player.player_radius = 0.3; // 30% of tile size
-	game->player.move_speed = 0.5f; // pixels per frame
+	game->player.move_speed = (float)PLAYER_MOV_SPEED;
 	if (game->player.dir == 'N')
 	{
-		game->player.player_angle = 3.0f * PI_VALUE / 2.0f; // 270 degrees in radians
+		game->player.player_angle = 270.0f; // degrees
 	}
 	else if (game->player.dir == 'S')
 	{
-		game->player.player_angle = PI_VALUE / 2.0f; // 90 degrees in radians
+		game->player.player_angle = 90.0f; // degrees
 	}
 	else if (game->player.dir == 'E')
 	{
-		game->player.player_angle = 0.0f; // 0 degrees in radians
+		game->player.player_angle = 0.0f; // degrees
 	}
 	else if (game->player.dir == 'W')
 	{
-		game->player.player_angle = PI_VALUE; // 180 degrees in radians
+		game->player.player_angle = 180.0f; // degrees
 	}
-	game->player.player_delta_x = -cos(game->player.player_angle);
-	game->player.player_delta_y = -sin(game->player.player_angle);
+	/* store deltas as unit vector using degrees -> radians conversion */
+	game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle));
+	game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle));
+	/* defaults for rendering/config that moved into player/ray structs */
+	game->player.fov_degrees = 45.0f;
+	/* default to auto (0) so raycasting uses image width unless overridden */
+	game->ray.num_rays = 0;
+	game->ray.debug_rays = false;
 }
 
-static void	draw_game(t_game *game)
+// draw_game wrapper removed — use draw_map_to_image when needed and background cache for per-frame rendering
+
+static void	draw_map_to_image(t_game *game, t_img *target)
 {
 	int	tile_y;
 	int	tile_x;
@@ -113,6 +193,7 @@ static void	draw_game(t_game *game)
 	int world_y;
 	int	color;
 
+	(void)target; /* my_store_pixel_in_image uses target pointer directly */
 	tile_y = 0;
 	int xrow;
 	/* draw each map cell as a ONE_TILE_SIDE x ONE_TILE_SIDE square so the map is larger on screen */
@@ -126,19 +207,21 @@ static void	draw_game(t_game *game)
 			world_x = tile_x * ONE_TILE_SIDE;
 			if (game->map.map[tile_y][tile_x] == '1')
 				color = COLOR_WHITE; // wall
+			else if (game->map.map[tile_y][tile_x] == ' ')
+				color = COLOR_GREY; // empty space
 			else
-				color = COLOR_BLACK; // empty space
+				color = COLOR_BLACK; // other (e.g. sprites)
 			// draw the square for this map cell
 			for (int y = 0; y < ONE_TILE_SIDE; y++)
 				for (int x = 0; x < ONE_TILE_SIDE; x++)
-					my_store_pixel_in_image(&game->image, world_x + x, world_y + y, color);
+					my_store_pixel_in_image(target, world_x + x, world_y + y, color);
 			// draw cell borders
 			for (int i = 0; i < ONE_TILE_SIDE; i++)
 			{
-				my_store_pixel_in_image(&game->image, world_x + i, world_y, COLOR_GREY); // top
-				my_store_pixel_in_image(&game->image, world_x + i, world_y + ONE_TILE_SIDE - 1, COLOR_GREY); // bottom
-				my_store_pixel_in_image(&game->image, world_x, world_y + i, COLOR_GREY); // left
-				my_store_pixel_in_image(&game->image, world_x + ONE_TILE_SIDE - 1, world_y + i, COLOR_GREY); // right
+				my_store_pixel_in_image(target, world_x + i, world_y, COLOR_GREY); // top
+				my_store_pixel_in_image(target, world_x + i, world_y + ONE_TILE_SIDE - 1, COLOR_GREY); // bottom
+				my_store_pixel_in_image(target, world_x, world_y + i, COLOR_GREY); // left
+				my_store_pixel_in_image(target, world_x + ONE_TILE_SIDE - 1, world_y + i, COLOR_GREY); // right
 			}
 			tile_x++;
 		}
@@ -148,11 +231,11 @@ static void	draw_game(t_game *game)
 
 // Detailed explanation:
 // This function calculates the memory offset for a pixel at coordinates (x, y) in the image.
-// it calculates the offset in the image's pixel data array using the formula:
+// it calculates the offset in the image's pixel game array using the formula:
 // offset = (line_length * y) + (x * (bits_per_pixel / 8))
 // Here, line_length is the number of bytes in a single row of pixels, y is the row number, x is the column number, and bits_per_pixel / 8 converts bits to bytes.
 // Finally, it stores the color value at the calculated offset by casting the offset pointer to an unsigned int pointer and dereferencing it to set the color
-static void	my_store_pixel_in_image(t_img *image, int x, int y, int color)
+void	my_store_pixel_in_image(t_img *image, int x, int y, int color)
 {
 	int	offset;
 
@@ -175,11 +258,11 @@ static int	key_press(int key_sym, t_game *game)
 		free_game(game);
 		exit(0);
 	}
-	if (key_sym == XK_w || key_sym == XK_Up)
+	if (key_sym == XK_w)
 		game->player.player_mov_forward = true;
 	if (key_sym == XK_a)
 		game->player.player_mov_left = true;
-	if (key_sym == XK_s || key_sym == XK_Down)
+	if (key_sym == XK_s)
 		game->player.player_mov_backward = true;
 	if (key_sym == XK_d)
 		game->player.player_mov_right = true;
@@ -193,11 +276,11 @@ static int	key_press(int key_sym, t_game *game)
 static int	key_release(int key_sym, t_game *game)
 {
 	// On key release, we just set the movement/rotation flags to false
-	if (key_sym == XK_w || key_sym == XK_Up)
+	if (key_sym == XK_w)
 		game->player.player_mov_forward = false;
 	if (key_sym == XK_a)
 		game->player.player_mov_left = false;
-	if (key_sym == XK_s || key_sym == XK_Down)
+	if (key_sym == XK_s)
 		game->player.player_mov_backward = false;
 	if (key_sym == XK_d)
 		game->player.player_mov_right = false;
@@ -206,14 +289,6 @@ static int	key_release(int key_sym, t_game *game)
 	if (key_sym == XK_Right)
 		game->player.player_rot_right = false;
 	return (0);
-}
-
-static void lets_see_them_rays(t_game *game)
-{
-	// This function is a placeholder for future raycasting logic
-	// It will calculate and visualize rays from the player's position
-	// to demonstrate the raycasting process in the 2D map
-	(void)game; // to avoid unused parameter warning
 }
 
 static void draw_player(t_game *game)
@@ -232,8 +307,8 @@ static void draw_player(t_game *game)
 	// lets draw my angle line
 	for (int i = 0; i < 15; i++)
 	{
-		int line_x = player_pixel_x + (int)(cos(game->player.player_angle) * i);
-		int line_y = player_pixel_y + (int)(sin(game->player.player_angle) * i);
+		int line_x = player_pixel_x + (int)(cosf(deg_to_rad(game->player.player_angle)) * i);
+		int line_y = player_pixel_y + (int)(sinf(deg_to_rad(game->player.player_angle)) * i);
 		my_store_pixel_in_image(&game->image, line_x, line_y, COLOR_YELLOW);
 	}
 	// now draw the player as a square
@@ -251,21 +326,27 @@ static void draw_player(t_game *game)
 
 static void change_player_rot(t_game *game)
 {
+	/* Compute rotation delta in DEGREES. The old code used a radian delta
+	   of (PLAYER_MOV_SPEED / 50.0f). To preserve the previous angular
+	   speed after switching to degrees, convert that radian delta to
+	   degrees using `rad_to_deg`.
+	*/
+	float rot_delta_deg = rad_to_deg((float)PLAYER_MOV_SPEED / 50.0f);
 	if (game->player.player_rot_left)
 	{
-		game->player.player_angle -= 0.05f; //we calculate radians with: angle_in_radians = angle_in_degrees * (PI_VALUE / 180.0f);
+		game->player.player_angle -= rot_delta_deg;
 		if (game->player.player_angle < 0.0f)
-			game->player.player_angle += 2.0f * PI_VALUE;
-		game->player.player_delta_x = -cos(game->player.player_angle);
-		game->player.player_delta_y = -sin(game->player.player_angle);
+			game->player.player_angle += 360.0f;
+		game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle));
+		game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle));
 	}
 	if (game->player.player_rot_right)
 	{
-		game->player.player_angle += 0.05f; // rotate right by 0.05 radians. 0.05 rad = ~2.86 degrees. check my_math.c for conversion formula
-		if (game->player.player_angle > 2.0f * PI_VALUE)
-			game->player.player_angle -= 2.0f * PI_VALUE;
-		game->player.player_delta_x = -cos(game->player.player_angle);
-		game->player.player_delta_y = -sin(game->player.player_angle);
+		game->player.player_angle += rot_delta_deg; /* degrees */
+		if (game->player.player_angle > 360.0f)
+			game->player.player_angle -= 360.0f;
+		game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle));
+		game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle));
 	}
 }
 
@@ -279,9 +360,9 @@ static void change_player_mov(t_game *game)
 	ny = game->player.pos_y;
 	strafing_diagonally = check_diagonally_strafing(game);
 	if (strafing_diagonally)
-		game->player.move_speed = 0.4f; // reduce speed when moving diagonally
+		game->player.move_speed = (float)PLAYER_MOV_SPEED / 1.4f; // reduce speed when moving diagonally
 	else
-		game->player.move_speed = 0.5f; // normal speed
+		game->player.move_speed = (float)PLAYER_MOV_SPEED; // normal speed
 	// Move in fractional tile units
 	if (game->player.player_mov_left)
 	{
@@ -329,7 +410,7 @@ static bool is_colision(t_game *game, float nx, float ny)
 	// Check if new position is walkable
 	if (ny >= 0 && (int)ny < game->map.y_max &&
 		nx >= 0 && (int)nx < (int)ft_strlen(game->map.map[(int)ny]) &&
-		game->map.map[(int)(ny)][(int)(nx)] != '1')
+		game->map.map[(int)(ny)][(int)(nx)] != '1' && game->map.map[(int)(ny)][(int)(nx)] != ' ')
 	{
 		return (false); // no collision
 	}

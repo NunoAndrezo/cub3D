@@ -27,3 +27,42 @@ char	*ft_strdup(const char *s)
 	ptr[j] = '\0';
 	return (ptr);
 }
+
+char *ft_strjoin_char(const char *s, char c)
+{
+	char *new_str;
+	size_t len;
+
+	if (!s)
+		len = 0;
+	else
+		len = ft_strlen(s);
+
+	new_str = (char *)malloc(len + 2); // +1 for char, +1 for '\0'
+	if (!new_str)
+		return NULL;
+
+	if (s)
+		ft_strcpy(new_str, s);
+	if (!s)
+		return NULL;
+	new_str[len] = c;
+	new_str[len + 1] = '\0';
+	return new_str;
+}
+
+char *ft_strcpy(char *dst, const char *src)
+{
+	size_t i = 0;
+
+	if (!dst || !src)
+		return NULL;
+
+	while (src[i] != '\0')
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = '\0';
+	return dst;
+}
