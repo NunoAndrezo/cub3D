@@ -26,8 +26,7 @@ SRC_FILES	=	main.c parsing.c initiate_game.c map_validation.c \
 				handle_map.c get_next_line.c get_next_line_utils.c \
 				ft_bzero.c ft_calloc.c utils.c setup_signals.c \
 				flood_fill.c free_me_baby.c raycasting.c ft_memcpy.c \
-				my_math.c
-
+				my_math.c drawing_3d_game.c
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
 #paths

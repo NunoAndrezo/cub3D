@@ -103,6 +103,7 @@ typedef struct s_ray
 	float	angle;
 	float	ray_x;
 	float	ray_y;
+	float	final_distance;
 	/* per-ray configuration */
 	int		num_rays; /* 0 = auto (image width) */
 	bool	debug_rays; /* draw debug colors for hits */
@@ -193,5 +194,8 @@ void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 
 //ft_memcpy.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
+
+//drawing_3d_game.c
+void draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side);
 
 #endif

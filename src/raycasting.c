@@ -55,7 +55,7 @@ static void cast_single_ray_two_pass(t_game *game, float angle)
 	int hit_side = -1; /* 0 = vertical, 1 = horizontal */
 
 	/* --- HORIZONTAL intersections --- */
-	if (fabsf(dirY) > 1e-9f)
+	if (fabsf(dirY) > 1e-9f) // whats fabsf? // absolute value for float, in order to avoid division by zero
 	{
 		float y_intercept = (dirY > 0.0f) ? floorf(py) + 1.0f : floorf(py);
 		float x_intercept = px + (y_intercept - py) * (dirX / dirY);
@@ -133,9 +133,10 @@ static void cast_single_ray_two_pass(t_game *game, float angle)
 				break;
 		}
 	}
-
+	game->ray.final_distance = best_dist * (float)ONE_TILE_SIDE; /* convert back to pixel units */
 	/* draw the chosen ray/hit */
 	draw_rays(game, hitX, hitY, hit_side);
+	draw_3Dgame(game, angle, best_dist, hit_side);
 }
 
 static void draw_rays(t_game *game, float ray_x, float ray_y, int hit_side)

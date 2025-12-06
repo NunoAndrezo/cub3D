@@ -10,8 +10,9 @@ bool	map_is_valid(t_game *game)
 	//check for walls, valid characters, etc.
 	if (check_player(game) && is_map_playable(game))
 		return (true);
-	fprintf(stderr, "Error: Map is invalid. Either Flood fill failed or player check failed\n");
-	return (false);
+	perror("Error: Map is invalid.\n");
+	free_game(game);
+	exit(EXIT_FAILURE);
 }
 
 static bool	check_player(t_game *game)
