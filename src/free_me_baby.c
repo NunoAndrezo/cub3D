@@ -38,5 +38,25 @@ void	free_game(t_game *game)
 		free(game->mlx_struct);
 		game->mlx_struct = NULL;
 	}
+	if (game->textures.north_texture)
+	{
+		free(game->textures.north_texture);
+		game->textures.north_texture = NULL;
+	}
+	if (game->textures.south_texture)
+	{
+		free(game->textures.south_texture);
+		game->textures.south_texture = NULL;
+	}
+	if (game->textures.west_texture)
+	{
+		free(game->textures.west_texture);
+		game->textures.west_texture = NULL;
+	}
+	if (game->textures.east_texture)
+	{
+		free(game->textures.east_texture);
+		game->textures.east_texture = NULL;
+	}
 	// Free other allocated resources if any
 }

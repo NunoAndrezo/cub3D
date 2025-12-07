@@ -49,30 +49,19 @@
 enum e_colors
 {
 	COLOR_BLACK = 0x000000,
-	COLOR_WHITE = 0xFFFFFF,
-	COLOR_RED = 0xFF0000,
-	COLOR_GREEN = 0x00FF00,
 	COLOR_BLUE = 0x0000FF,
-	COLOR_YELLOW = 0xFFFF00,
+	COLOR_BROWN = 0xA52A2A,
 	COLOR_CYAN = 0x00FFFF,
+	COLOR_DARK_GREY = 0x404040,
+	COLOR_GREEN = 0x00FF00,
+	COLOR_GREY = 0x808080,
+	COLOR_LIGHT_GREY = 0xC0C0C0,
 	COLOR_MAGENTA = 0xFF00FF,
-	COLOR_GREY = 0x808080
-};
-
-enum e_game_state
-{
-	STATE_MENU,
-	STATE_OPTIONS,
-	STATE_PLAYING,
-	STATE_PAUSED
-};
-
-enum e_texture_index // use this or use e_game_colors?
-{
-	NORTH_TEXTURE = 0,
-	SOUTH_TEXTURE = 1,
-	EAST_TEXTURE = 2,
-	WEST_TEXTURE = 3
+	COLOR_ORANGE = 0xFFA500,
+	COLOR_PINK = 0xFFC0CB,
+	COLOR_RED = 0xFF0000,
+	COLOR_WHITE = 0xFFFFFF,
+	COLOR_YELLOW = 0xFFFF00,
 };
 
 /* simple image container */
@@ -95,6 +84,7 @@ typedef struct	s_map
 	float		player_start_x;
 	float		player_start_y;
 	int		y_max;
+	int		y_start;
 	int		x_max;
 }				t_map;
 
@@ -128,6 +118,16 @@ typedef struct s_player
 	bool	player_rot_right;
 }	t_player;
 
+typedef struct s_texture
+{
+	char	*north_texture;
+	char	*south_texture;
+	char	*west_texture;
+	char	*east_texture;
+	int		floor_color[3];
+	int		ceiling_color[3];
+}	t_texture;
+
 typedef struct	s_game
 {
 	t_map				map;
@@ -145,6 +145,7 @@ typedef struct	s_game
 	uint64_t			delta_time;
 	float				final_distance;
 	t_ray				ray;
+	t_texture			textures;
 }				t_game;
 
 //parsing.c
@@ -197,5 +198,14 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
 void draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side);
+
+//ft_split.c
+char	**ft_split(char const *s, char c);
+
+//ft_atoi.c
+int		ft_atoi(const char *str);
+
+//ft_strncmp.c
+int		ft_strncmp(const char *str1, const char *str2, size_t n);
 
 #endif
