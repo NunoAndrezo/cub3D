@@ -146,6 +146,12 @@ typedef struct	s_game
 	float				final_distance;
 	t_ray				ray;
 	t_texture			textures;
+	bool				texture_w;
+	bool				texture_s;
+	bool				texture_e;
+	bool				texture_n;
+	bool				color_f;
+	bool				color_c;
 }				t_game;
 
 //parsing.c
@@ -195,6 +201,7 @@ void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 
 //ft_memcpy.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
+void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
 void draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side);

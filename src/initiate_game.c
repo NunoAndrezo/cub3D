@@ -22,7 +22,7 @@ void	initiate_mlx(t_game *game)
 	game->mlx_struct = mlx_init(); // Create a structure to hold minilibx info
 	if (!game->mlx_struct)
 	{
-		perror("mlx_init failed");
+		perror("Error\nmlx_init failed");
 		free_game(game);
 		exit(1);
 	}
@@ -35,7 +35,7 @@ void	initiate_mlx(t_game *game)
 	game->win_struct = mlx_new_window(game->mlx_struct, game->win_w, game->win_h, "Cub3D"); // Create a structure to hold window info
 	if (!game->win_struct)
 	{
-		perror("mlx_new_window failed");
+		perror("Error\nmlx_new_window failed");
 		free_game(game);
 		exit(1);
 	}
@@ -130,7 +130,7 @@ int	main_loop(t_game *game)
 	game->start_time = current_time;
 	game->delta_time = elapsed;
 	accu += elapsed;
-	// Update game state at fixed intervals (~16 ms => ~60 updates/sec)
+	// Update game state at fixed intervals (~16 ms => ~60 updates/sec), explaining the math: 16 ms per update means 1000 ms / 16 ms = 62.5 updates per second
 	while (accu >= 16)
 	{
 		update_game(game);
@@ -159,11 +159,11 @@ static void	initiate_player(t_game *game)
 	game->player.move_speed = (float)PLAYER_MOV_SPEED;
 	if (game->player.dir == 'N')
 	{
-		game->player.player_angle = 270.0f; // degrees
+		game->player.player_angle = 270.0f; // graus
 	}
 	else if (game->player.dir == 'S')
 	{
-		game->player.player_angle = 90.0f; // degrees
+		game->player.player_angle = 90.0f; // degrees. nao esquecer que 0 graus e para a direita, 90 para baixo, 180 para a esquerda, 270 para cima
 	}
 	else if (game->player.dir == 'E')
 	{
@@ -174,10 +174,10 @@ static void	initiate_player(t_game *game)
 		game->player.player_angle = 180.0f; // degrees
 	}
 	/* store deltas as unit vector using degrees -> radians conversion */
-	game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle));
-	game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle));
+	game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle)); // we use -cos because 0 degrees is to the right, and we want to go left when angle is 180
+	game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle)); //same here, -sin because 0 degrees is to the right, and we want to go up when angle is 270
 	/* defaults for rendering/config that moved into player/ray structs */
-	game->player.fov_degrees = 45.0f;
+	game->player.fov_degrees = 60.0f;
 	/* default to auto (0) so raycasting uses image width unless overridden */
 	game->ray.num_rays = 0;
 	game->ray.debug_rays = false;
@@ -304,14 +304,7 @@ static void draw_player(t_game *game)
 	player_pixel_y = (int)(game->player.pos_y * ONE_TILE_SIDE);
 	y = -size;
 	x = -size;
-	// lets draw my angle line
-	for (int i = 0; i < 15; i++)
-	{
-		int line_x = player_pixel_x + (int)(cosf(deg_to_rad(game->player.player_angle)) * i);
-		int line_y = player_pixel_y + (int)(sinf(deg_to_rad(game->player.player_angle)) * i);
-		my_store_pixel_in_image(&game->image, line_x, line_y, COLOR_YELLOW);
-	}
-	// now draw the player as a square
+	// draw the player as a square
 	while (y <= size)
 	{
 		x = -size;
@@ -327,17 +320,18 @@ static void draw_player(t_game *game)
 static void change_player_rot(t_game *game)
 {
 	/* Compute rotation delta in DEGREES. The old code used a radian delta
-	   of (PLAYER_MOV_SPEED / 50.0f). To preserve the previous angular
-	   speed after switching to degrees, convert that radian delta to
-	   degrees using `rad_to_deg`.
+		of (PLAYER_MOV_SPEED / 50.0f). To preserve the previous angular
+		speed after switching to degrees, convert that radian delta to
+		degrees using `rad_to_deg`.
 	*/
-	float rot_delta_deg = rad_to_deg((float)PLAYER_MOV_SPEED / 50.0f);
+	float rot_delta_deg = rad_to_deg((float)PLAYER_MOV_SPEED / 50.0f); // degrees per update. rotation delta degrees means how many degrees to rotate per update
+	// we divide by 50 because 50 updates per second is 20ms per update, so we get a smooth rotation speed
 	if (game->player.player_rot_left)
 	{
 		game->player.player_angle -= rot_delta_deg;
 		if (game->player.player_angle < 0.0f)
 			game->player.player_angle += 360.0f;
-		game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle));
+		game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle)); // -cos because 0 degrees is to the right and the map is "upside down" in terms of y axis
 		game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle));
 	}
 	if (game->player.player_rot_right)

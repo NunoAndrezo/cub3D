@@ -79,7 +79,7 @@ static int	ft_fill(char **word_argv, char const *s, char c)
 			word_argv[a] = malloc(len + 1);
 			if (word_argv[a] == NULL)
 				return (ft_free(word_argv));
-			ft_memcpy(word_argv[a], s - len, len);
+			ft_memcpy_normal(word_argv[a], s - len, len);
 			word_argv[a++][len] = '\0';
 		}
 	}

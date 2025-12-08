@@ -10,7 +10,7 @@ bool	map_is_valid(t_game *game)
 	//check for walls, valid characters, etc.
 	if (check_player(game) && is_map_playable(game))
 		return (true);
-	perror("Error: Map is invalid.\n");
+	perror("Error\nMap is invalid.\n");
 	free_game(game);
 	exit(EXIT_FAILURE);
 }
@@ -40,7 +40,7 @@ static bool	check_player(t_game *game)
 				game->map.map[j][i] != 'N' && game->map.map[j][i] != 'S' &&
 				game->map.map[j][i] != 'E' && game->map.map[j][i] != 'W')
 			{
-				fprintf(stderr, "Error: Invalid character '%c' in map at (%d, %d)\n", game->map.map[j][i], j, i);
+				perror("Error\nInvalid character in map.\n");
 				free_game(game);
 				exit(EXIT_FAILURE);
 			}
@@ -84,7 +84,6 @@ bool last_map_adjustments(t_game *game)
 		{
 			if ((int)ft_strlen(game->map.map[j]) < max_len)
 			{
-				// pad with spaces
 				while ((int)ft_strlen(game->map.map[j]) < max_len)
 				{
 					new_row = ft_strjoin_char(game->map.map[j], ' ');

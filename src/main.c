@@ -6,7 +6,7 @@ int main(int ac, char **av)
 	t_game	game;
 
 	parse(ac, av);
-//	setup_signals();
+	setup_signals();
 	ft_bzero(&game, sizeof(t_game));
 	handle_map(av[1], &game);
 	if (map_is_valid(&game) == true && last_map_adjustments(&game))
@@ -18,7 +18,7 @@ int main(int ac, char **av)
 	else
 	{
 		free_game(&game);
-		fprintf(stderr, "Error: Map validation failed. Cannot start the game.\n");
+		perror("Error\nMap validation failed. Cannot start the game.\n");
 		return (1);
 	}
 	free_game(&game); // free allocated memory
