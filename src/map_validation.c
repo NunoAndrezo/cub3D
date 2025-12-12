@@ -1,14 +1,13 @@
 #include "../inc/cub3d.h"
 
 static bool	check_player(t_game *game);
-static bool	is_map_playable(t_game *game);
 // It doesn't have to be a rectangle.
 // And flood fill to check if the map is closed and its playable
 
 bool	map_is_valid(t_game *game)
 {
 	//check for walls, valid characters, etc.
-	if (check_player(game) && is_map_playable(game))
+	if (check_player(game) && flood_fill(game))
 		return (true);
 	perror("Error\nMap is invalid.\n");
 	free_game(game);
@@ -51,11 +50,6 @@ static bool	check_player(t_game *game)
 	if (player != 1)
 		return (false);
 	return (true);
-}
-
-static bool	is_map_playable(t_game *game)
-{
-	return (flood_fill(game));
 }
 
 bool last_map_adjustments(t_game *game)

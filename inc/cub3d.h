@@ -13,7 +13,7 @@
 #endif
 
 #ifndef PLAYER_MOV_SPEED
-#define PLAYER_MOV_SPEED 1
+#define PLAYER_MOV_SPEED 2
 #endif
 
 /* size in pixels to draw each map cell when drawing the top-down map.
