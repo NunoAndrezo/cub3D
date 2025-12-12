@@ -18,7 +18,7 @@ void lets_see_them_rays(t_game *game)
 		 * width if smaller than the target, otherwise cap to a modest
 		 * default (200) to reduce CPU/GPU work on large windows.
 		 */
-		int target = 200; /* sensible default ray count */
+		int target = 300; /* sensible default ray count */
 		num_rays = (game->image.width < target) ? game->image.width : target;
 	}
 
@@ -93,7 +93,6 @@ static void cast_single_ray_two_pass(t_game *game, float angle)
 				break;
 		}
 	}
-
 	/* --- VERTICAL intersections --- */
 	if (fabsf(dirX) > 1e-9f)
 	{
@@ -101,7 +100,6 @@ static void cast_single_ray_two_pass(t_game *game, float angle)
 		float y_intercept = py + (x_intercept - px) * (dirY / dirX);
 		float x_step = (dirX > 0.0f) ? 1.0f : -1.0f;
 		float y_step = x_step * (dirY / dirX);
-
 		float cur_x = x_intercept;
 		float cur_y = y_intercept;
 		while (1)

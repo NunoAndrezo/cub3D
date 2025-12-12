@@ -177,7 +177,7 @@ static void	initiate_player(t_game *game)
 	game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle)); // we use -cos because 0 degrees is to the right, and we want to go left when angle is 180
 	game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle)); //same here, -sin because 0 degrees is to the right, and we want to go up when angle is 270
 	/* defaults for rendering/config that moved into player/ray structs */
-	game->player.fov_degrees = 60.0f;
+	game->player.fov_degrees = 60.0f; 
 	/* default to auto (0) so raycasting uses image width unless overridden */
 	game->ray.num_rays = 0;
 	game->ray.debug_rays = false;
@@ -187,27 +187,27 @@ static void	initiate_player(t_game *game)
 
 static void	draw_map_to_image(t_game *game, t_img *target)
 {
-	int	tile_y;
-	int	tile_x;
+	int	real_y;
+	int	real_x;
 	int world_x;
 	int world_y;
 	int	color;
 
 	(void)target; /* my_store_pixel_in_image uses target pointer directly */
-	tile_y = 0;
+	real_y = 0;
 	int xrow;
 	/* draw each map cell as a ONE_TILE_SIDE x ONE_TILE_SIDE square so the map is larger on screen */
-	while (game->map.map[tile_y])
+	while (game->map.map[real_y])
 	{
-		tile_x = 0;
-		xrow = ft_strlen(game->map.map[tile_y]);
-		while (tile_x < xrow)
+		real_x = 0;
+		xrow = ft_strlen(game->map.map[real_y]);
+		while (real_x < xrow)
 		{
-			world_y = tile_y * ONE_TILE_SIDE;
-			world_x = tile_x * ONE_TILE_SIDE;
-			if (game->map.map[tile_y][tile_x] == '1')
+			world_y = real_y * ONE_TILE_SIDE;
+			world_x = real_x * ONE_TILE_SIDE;
+			if (game->map.map[real_y][real_x] == '1')
 				color = COLOR_WHITE; // wall
-			else if (game->map.map[tile_y][tile_x] == ' ')
+			else if (game->map.map[real_y][real_x] == ' ')
 				color = COLOR_GREY; // empty space
 			else
 				color = COLOR_BLACK; // other (e.g. sprites)
@@ -215,17 +215,17 @@ static void	draw_map_to_image(t_game *game, t_img *target)
 			for (int y = 0; y < ONE_TILE_SIDE; y++)
 				for (int x = 0; x < ONE_TILE_SIDE; x++)
 					my_store_pixel_in_image(target, world_x + x, world_y + y, color);
-			// draw cell borders
+/* 			// draw cell borders
 			for (int i = 0; i < ONE_TILE_SIDE; i++)
 			{
 				my_store_pixel_in_image(target, world_x + i, world_y, COLOR_GREY); // top
 				my_store_pixel_in_image(target, world_x + i, world_y + ONE_TILE_SIDE - 1, COLOR_GREY); // bottom
 				my_store_pixel_in_image(target, world_x, world_y + i, COLOR_GREY); // left
 				my_store_pixel_in_image(target, world_x + ONE_TILE_SIDE - 1, world_y + i, COLOR_GREY); // right
-			}
-			tile_x++;
+			} */
+			real_x++;
 		}
-		tile_y++;
+		real_y++;
 	}
 }
 
