@@ -58,5 +58,13 @@ void	free_game(t_game *game)
 		free(game->textures.east_texture);
 		game->textures.east_texture = NULL;
 	}
-	// Free other allocated resources if any
+	printf("north texture: %d\n", game->texture_n);
+	if (game->texture_n == true)
+		free(game->textures.north_texture);
+	if (game->texture_s == true)
+		free(game->textures.south_texture);
+	if (game->texture_e == true)
+		free(game->textures.east_texture);
+	if (game->texture_w == true)
+		free(game->textures.west_texture);
 }
