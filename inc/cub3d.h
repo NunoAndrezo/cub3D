@@ -13,7 +13,7 @@
 #endif
 
 #ifndef PLAYER_MOV_SPEED
-#define PLAYER_MOV_SPEED 2
+#define PLAYER_MOV_SPEED 1
 #endif
 
 /* size in pixels to draw each map cell when drawing the top-down map.
@@ -168,7 +168,7 @@ bool	last_map_adjustments(t_game *game);
 bool	map_is_valid(t_game *game);
 
 // initiate.c
-void	initiate_mlx(t_game *game);
+void	initiate_game(t_game *game);
 
 //setup_signals.c
 void	setup_signals(void);
@@ -196,9 +196,6 @@ bool	flood_fill(t_game *game);
 //raycasting.c
 void	lets_see_them_rays(t_game *game);
 
-void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
-//int		my_clear_image(t_game *game);
-
 //ft_memcpy.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
@@ -214,5 +211,23 @@ int		ft_atoi(const char *str);
 
 //ft_strncmp.c
 int		ft_strncmp(const char *str1, const char *str2, size_t n);
+
+//start_time.c
+uint64_t	get_time_in_ms(void);
+
+//start_gaming.c
+void	start_gaming(t_game *game);
+
+//mlx_events.c
+void	handle_mlx_events(t_game *game);
+
+//2D_drawing.c
+void	draw_map_to_image(t_game *game, t_img *target);
+void	draw_player(t_game *game);
+void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
+
+//handle_player_mov_and_rot.c
+void change_player_rot(t_game *game);
+void change_player_mov(t_game *game);
 
 #endif

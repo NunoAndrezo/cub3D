@@ -1,6 +1,5 @@
 #include "../inc/cub3d.h"
 
-
 int main(int ac, char **av)
 {
 	t_game	game;
@@ -11,9 +10,9 @@ int main(int ac, char **av)
 	handle_map(av[1], &game);
 	if (map_is_valid(&game) == true && last_map_adjustments(&game))
 	{
-		initiate_mlx(&game); // initialize mlx, window, etc.
-		//load_textures(&game); // load game textures
-		//start_gaming(&game); //main game loop
+		initiate_game(&game);
+		//load_game(&game);
+		start_gaming(&game);
 	}
 	else
 	{
@@ -21,7 +20,7 @@ int main(int ac, char **av)
 		perror("Error\nMap validation failed. Cannot start the game.\n");
 		return (1);
 	}
-	free_game(&game); // free allocated memory
+	free_game(&game);
 	return (0);
 }
 
