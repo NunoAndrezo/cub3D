@@ -91,5 +91,4 @@ static void	initiate_player(t_game *game)
 	game->player.fov_degrees = 60.0f; 
 	/* default to auto (0) so raycasting uses image width unless overridden */
 	game->ray.num_rays = 0;
-	game->ray.debug_rays = false;
 }

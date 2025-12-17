@@ -11,7 +11,7 @@ int main(int ac, char **av)
 	if (map_is_valid(&game) == true && last_map_adjustments(&game))
 	{
 		initiate_game(&game);
-		//load_game(&game);
+		load_game(&game);
 		start_gaming(&game);
 	}
 	else

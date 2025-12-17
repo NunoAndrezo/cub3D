@@ -81,8 +81,8 @@ typedef struct	s_map
 	char	**map;
 	char	*map_file;
 	char	player_orientation;
-	float		player_start_x;
-	float		player_start_y;
+	float	player_start_x;
+	float	player_start_y;
 	int		y_max;
 	int		y_start;
 	int		x_max;
@@ -96,8 +96,6 @@ typedef struct s_ray
 	float	final_distance;
 	/* per-ray configuration */
 	int		num_rays; /* 0 = auto (image width) */
-	bool	debug_rays; /* draw debug colors for hits */
-
 }	t_ray;
 
 typedef struct s_player
@@ -124,6 +122,8 @@ typedef struct s_texture
 	char	*south_texture;
 	char	*west_texture;
 	char	*east_texture;
+	int		texture_w;
+	int		texture_h;
 	int		floor_color[3];
 	int		ceiling_color[3];
 }	t_texture;
@@ -229,5 +229,8 @@ void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 //handle_player_mov_and_rot.c
 void change_player_rot(t_game *game);
 void change_player_mov(t_game *game);
+
+//load_game.c
+void	load_game(t_game *game);
 
 #endif
