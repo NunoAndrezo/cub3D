@@ -58,13 +58,25 @@ void	free_game(t_game *game)
 		free(game->textures.east_texture);
 		game->textures.east_texture = NULL;
 	}
-	printf("north texture: %d\n", game->texture_n);
-	if (game->texture_n == true)
-		free(game->textures.north_texture);
-	if (game->texture_s == true)
-		free(game->textures.south_texture);
-	if (game->texture_e == true)
-		free(game->textures.east_texture);
-	if (game->texture_w == true)
-		free(game->textures.west_texture);
+	if (game->textures.north_img)
+	{
+		printf("Freeing north texture image\n");
+		mlx_destroy_image(game->mlx_struct, game->textures.north_img);
+		game->textures.north_img = NULL;
+	}
+	if (game->textures.south_img)
+	{
+		mlx_destroy_image(game->mlx_struct, game->textures.south_img);
+		game->textures.south_img = NULL;
+	}
+	if (game->textures.west_img)
+	{
+		mlx_destroy_image(game->mlx_struct, game->textures.west_img);
+		game->textures.west_img = NULL;
+	}
+	if (game->textures.east_img)
+	{
+		mlx_destroy_image(game->mlx_struct, game->textures.east_img);
+		game->textures.east_img = NULL;
+	}
 }

@@ -122,6 +122,11 @@ typedef struct s_texture
 	char	*south_texture;
 	char	*west_texture;
 	char	*east_texture;
+	char	*north_img;
+	char	*south_img;
+	char	*west_img;
+	char	*east_img;
+
 	int		texture_w;
 	int		texture_h;
 	int		floor_color[3];
@@ -232,5 +237,8 @@ void change_player_mov(t_game *game);
 
 //load_game.c
 void	load_game(t_game *game);
+
+//strip_newline.c
+void strip_newline(char *str);
 
 #endif

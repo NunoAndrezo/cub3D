@@ -38,7 +38,7 @@ char *ft_strjoin_char(const char *s, char c)
 	else
 		len = ft_strlen(s);
 
-	new_str = (char *)malloc(len + 2); // +1 for char, +1 for '\0'
+	new_str = (char *)malloc(len + 2);
 	if (!new_str)
 		return NULL;
 
