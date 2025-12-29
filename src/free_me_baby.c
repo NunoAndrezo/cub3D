@@ -1,23 +1,12 @@
 #include "../inc/cub3d.h"
 
+static void free_game_map(t_game *game);
 static void free_textures_paths(t_game *game);
 static void free_texture_images(t_game *game);
 
 void	free_game(t_game *game)
 {
-	int	i;
-
-	if (game->map.map)
-	{
-		i = 0;
-		while (game->map.map[i])
-		{
-			free(game->map.map[i]);
-			i++;
-		}
-		free(game->map.map);
-		game->map.map = NULL;
-	}
+	free_game_map(game);
 	if (game->win_struct)
 	{
 		mlx_destroy_window(game->mlx_struct, game->win_struct);
@@ -30,6 +19,27 @@ void	free_game(t_game *game)
 		mlx_destroy_display(game->mlx_struct);
 		free(game->mlx_struct);
 		game->mlx_struct = NULL;
+	}
+}
+
+static void free_game_map(t_game *game)
+{
+	int	i;
+
+	if (game->map.map)
+	{
+		i = 0;
+		while (i < game->map.y_max)
+		{
+			if (game->map.map[i])
+			{
+				free(game->map.map[i]);
+				game->map.map[i] = NULL;
+			}
+			i++;
+		}
+		free(game->map.map);
+		game->map.map = NULL;
 	}
 }
 
