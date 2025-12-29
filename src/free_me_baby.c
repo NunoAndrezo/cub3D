@@ -1,5 +1,8 @@
 #include "../inc/cub3d.h"
 
+static void free_textures_paths(t_game *game);
+static void free_texture_images(t_game *game);
+
 void	free_game(t_game *game)
 {
 	int	i;
@@ -15,17 +18,6 @@ void	free_game(t_game *game)
 		free(game->map.map);
 		game->map.map = NULL;
 	}
-	if (game->image.img_ptr)
-	{
-		mlx_destroy_image(game->mlx_struct, game->image.img_ptr);
-		game->image.img_ptr = NULL;
-	}
-	/* destroy background image if allocated */
-	if (game->bg_image.img_ptr)
-	{
-		mlx_destroy_image(game->mlx_struct, game->bg_image.img_ptr);
-		game->bg_image.img_ptr = NULL;
-	}
 	if (game->win_struct)
 	{
 		mlx_destroy_window(game->mlx_struct, game->win_struct);
@@ -33,11 +25,16 @@ void	free_game(t_game *game)
 	}
 	if (game->mlx_struct)
 	{
-		// If there are images or textures loaded, they should be destroyed here
+		free_textures_paths(game);
+		free_texture_images(game);
 		mlx_destroy_display(game->mlx_struct);
 		free(game->mlx_struct);
 		game->mlx_struct = NULL;
 	}
+}
+
+static void free_textures_paths(t_game *game)
+{
 	if (game->textures.north_texture)
 	{
 		free(game->textures.north_texture);
@@ -58,9 +55,12 @@ void	free_game(t_game *game)
 		free(game->textures.east_texture);
 		game->textures.east_texture = NULL;
 	}
+}
+
+static void free_texture_images(t_game *game)
+{
 	if (game->textures.north_img)
 	{
-		printf("Freeing north texture image\n");
 		mlx_destroy_image(game->mlx_struct, game->textures.north_img);
 		game->textures.north_img = NULL;
 	}
@@ -78,5 +78,15 @@ void	free_game(t_game *game)
 	{
 		mlx_destroy_image(game->mlx_struct, game->textures.east_img);
 		game->textures.east_img = NULL;
+	}
+	if (game->image.img_ptr)
+	{
+		mlx_destroy_image(game->mlx_struct, game->image.img_ptr);
+		game->image.img_ptr = NULL;
+	}
+	if (game->bg_image.img_ptr)
+	{
+		mlx_destroy_image(game->mlx_struct, game->bg_image.img_ptr);
+		game->bg_image.img_ptr = NULL;
 	}
 }
