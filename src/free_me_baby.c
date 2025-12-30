@@ -7,6 +7,8 @@ static void free_texture_images(t_game *game);
 void	free_game(t_game *game)
 {
 	free_game_map(game);
+	free_textures_paths(game);
+	free_texture_images(game);
 	if (game->win_struct)
 	{
 		mlx_destroy_window(game->mlx_struct, game->win_struct);
@@ -14,8 +16,6 @@ void	free_game(t_game *game)
 	}
 	if (game->mlx_struct)
 	{
-		free_textures_paths(game);
-		free_texture_images(game);
 		mlx_destroy_display(game->mlx_struct);
 		free(game->mlx_struct);
 		game->mlx_struct = NULL;
