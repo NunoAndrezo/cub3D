@@ -165,7 +165,7 @@ static void draw_rays(t_game *game, float ray_x, float ray_y, int hit_side)
 	}
 
 	/* if debug is enabled, mark the hit pixel with side-specific color */
-	if (game->ray.debug_rays && hit_side != -1)
+	if (hit_side != -1)
 	{
 		int hx = ray_pixel_x;
 		int hy = ray_pixel_y;

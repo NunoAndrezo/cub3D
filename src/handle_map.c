@@ -94,49 +94,71 @@ static void save_parameteres(t_game *game, char *line, int fd)
 	{
 		i = 2;
 		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			line++;
-		game->textures.north_texture = ft_strdup(line + 2);
-		game->texture_n = true;
+			i++;
+		if (line[i])
+		{
+			game->textures.north_texture = ft_strdup(line + i);
+			strip_newline(game->textures.north_texture);
+			game->texture_n = true;
+		}
 	}
 	else if (ft_strncmp(line, "SO", 2) == 0)
 	{
 		i = 2;
 		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			line++;
-		game->textures.south_texture = ft_strdup(line + 2);
-		game->texture_s = true;
+			i++;
+		if (line[i])
+		{
+			game->textures.south_texture = ft_strdup(line + i);
+			strip_newline(game->textures.south_texture);
+			game->texture_s = true;
+		}
 	}
 	else if (ft_strncmp(line, "WE", 2) == 0)
 	{
 		i = 2;
 		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			line++;
-		game->textures.west_texture = ft_strdup(line + 2);
-		game->texture_w = true;
+			i++;
+		if (line[i])
+		{
+			game->textures.west_texture = ft_strdup(line + i);
+			strip_newline(game->textures.west_texture);
+			game->texture_w = true;
+		}
 	}
 	else if (ft_strncmp(line, "EA", 2) == 0)
 	{
 		i = 2;
 		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			line++;
-		game->textures.east_texture = ft_strdup(line + 2);
-		game->texture_e = true;
+			i++;
+		if (line[i])
+		{
+			game->textures.east_texture = ft_strdup(line + i);
+			strip_newline(game->textures.east_texture);
+			game->texture_e = true;
+		}
 	}
 	else if (ft_strncmp(line, "F", 1) == 0)
 	{
 		i = 1;
 		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			line++;
-		success = save_color(game, line + 1, 'F');
-		game->color_f = true;
+			i++;
+		if (line[i] && line[i] >= '0' && line[i] <= '9')
+		{
+			success = save_color(game, line + i, 'F');
+			game->color_f = true;
+		}
 	}
 	else if (ft_strncmp(line, "C", 1) == 0)
 	{
 		i = 1;
 		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			line++;
-		success = save_color(game, line + 1, 'C');
-		game->color_c = true;
+			i++;
+		if (line[i] && line[i] >= '0' && line[i] <= '9')
+		{
+			success = save_color(game, line + i, 'C');
+			game->color_c = true;
+		}
 	}
 	else
 	{
