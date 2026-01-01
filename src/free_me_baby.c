@@ -1,31 +1,14 @@
 #include "../inc/cub3d.h"
 
+static void free_game_map(t_game *game);
+static void free_textures_paths(t_game *game);
+static void free_texture_images(t_game *game);
+
 void	free_game(t_game *game)
 {
-	int	i;
-
-	if (game->map.map)
-	{
-		i = 0;
-		while (game->map.map[i])
-		{
-			free(game->map.map[i]);
-			i++;
-		}
-		free(game->map.map);
-		game->map.map = NULL;
-	}
-	if (game->image.img_ptr)
-	{
-		mlx_destroy_image(game->mlx_struct, game->image.img_ptr);
-		game->image.img_ptr = NULL;
-	}
-	/* destroy background image if allocated */
-	if (game->bg_image.img_ptr)
-	{
-		mlx_destroy_image(game->mlx_struct, game->bg_image.img_ptr);
-		game->bg_image.img_ptr = NULL;
-	}
+	free_game_map(game);
+	free_textures_paths(game);
+	free_texture_images(game);
 	if (game->win_struct)
 	{
 		mlx_destroy_window(game->mlx_struct, game->win_struct);
@@ -33,11 +16,35 @@ void	free_game(t_game *game)
 	}
 	if (game->mlx_struct)
 	{
-		// If there are images or textures loaded, they should be destroyed here
 		mlx_destroy_display(game->mlx_struct);
 		free(game->mlx_struct);
 		game->mlx_struct = NULL;
 	}
+}
+
+static void free_game_map(t_game *game)
+{
+	int	i;
+
+	if (game->map.map)
+	{
+		i = 0;
+		while (i < game->map.y_max)
+		{
+			if (game->map.map[i])
+			{
+				free(game->map.map[i]);
+				game->map.map[i] = NULL;
+			}
+			i++;
+		}
+		free(game->map.map);
+		game->map.map = NULL;
+	}
+}
+
+static void free_textures_paths(t_game *game)
+{
 	if (game->textures.north_texture)
 	{
 		free(game->textures.north_texture);
@@ -58,5 +65,38 @@ void	free_game(t_game *game)
 		free(game->textures.east_texture);
 		game->textures.east_texture = NULL;
 	}
-	// Free other allocated resources if any
+}
+
+static void free_texture_images(t_game *game)
+{
+	if (game->textures.north_img)
+	{
+		mlx_destroy_image(game->mlx_struct, game->textures.north_img);
+		game->textures.north_img = NULL;
+	}
+	if (game->textures.south_img)
+	{
+		mlx_destroy_image(game->mlx_struct, game->textures.south_img);
+		game->textures.south_img = NULL;
+	}
+	if (game->textures.west_img)
+	{
+		mlx_destroy_image(game->mlx_struct, game->textures.west_img);
+		game->textures.west_img = NULL;
+	}
+	if (game->textures.east_img)
+	{
+		mlx_destroy_image(game->mlx_struct, game->textures.east_img);
+		game->textures.east_img = NULL;
+	}
+	if (game->image.img_ptr)
+	{
+		mlx_destroy_image(game->mlx_struct, game->image.img_ptr);
+		game->image.img_ptr = NULL;
+	}
+	if (game->bg_image.img_ptr)
+	{
+		mlx_destroy_image(game->mlx_struct, game->bg_image.img_ptr);
+		game->bg_image.img_ptr = NULL;
+	}
 }

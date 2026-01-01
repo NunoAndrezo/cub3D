@@ -81,8 +81,8 @@ typedef struct	s_map
 	char	**map;
 	char	*map_file;
 	char	player_orientation;
-	float		player_start_x;
-	float		player_start_y;
+	float	player_start_x;
+	float	player_start_y;
 	int		y_max;
 	int		y_start;
 	int		x_max;
@@ -104,8 +104,6 @@ typedef struct s_ray
 	float	final_distance;
 	/* per-ray configuration */
 	int		num_rays; /* 0 = auto (image width) */
-	bool	debug_rays; /* draw debug colors for hits */
-
 }	t_ray;
 
 typedef struct s_player
@@ -132,6 +130,13 @@ typedef struct s_texture
 	char	*south_texture;
 	char	*west_texture;
 	char	*east_texture;
+	char	*north_img;
+	char	*south_img;
+	char	*west_img;
+	char	*east_img;
+
+	int		texture_w;
+	int		texture_h;
 	int		floor_color[3];
 	int		ceiling_color[3];
 }	t_texture;
@@ -176,7 +181,7 @@ bool	last_map_adjustments(t_game *game);
 bool	map_is_valid(t_game *game);
 
 // initiate.c
-void	initiate_mlx(t_game *game);
+void	initiate_game(t_game *game);
 
 //setup_signals.c
 void	setup_signals(void);
@@ -204,9 +209,6 @@ bool	flood_fill(t_game *game);
 //raycasting.c
 void	lets_see_them_rays(t_game *game);
 
-void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
-//int		my_clear_image(t_game *game);
-
 //ft_memcpy.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
@@ -222,5 +224,29 @@ int		ft_atoi(const char *str);
 
 //ft_strncmp.c
 int		ft_strncmp(const char *str1, const char *str2, size_t n);
+
+//start_time.c
+uint64_t	get_time_in_ms(void);
+
+//start_gaming.c
+void	start_gaming(t_game *game);
+
+//mlx_events.c
+void	handle_mlx_events(t_game *game);
+
+//2D_drawing.c
+void	draw_map_to_image(t_game *game, t_img *target);
+void	draw_player(t_game *game);
+void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
+
+//handle_player_mov_and_rot.c
+void change_player_rot(t_game *game);
+void change_player_mov(t_game *game);
+
+//load_game.c
+void	load_game(t_game *game);
+
+//strip_newline.c
+void strip_newline(char *str);
 
 #endif
