@@ -208,14 +208,27 @@ bool	flood_fill(t_game *game);
 
 //raycasting.c
 void	lets_see_them_rays(t_game *game);
+float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y);
+void	dda_step(t_ray *r, int *map_x, int *map_y);
+
+//raycasting_utils.c
+int		is_wall(t_game *g, int x, int y);
+void	draw_rays(t_game *g, float x, float y, int side);
+void	cast_ray(t_game *g, t_ray *r);
+void	init_ray_dir_pos(t_game *g, t_ray *r, float angle, float *pos_x, float *pos_y, int *map_x, int *map_y);
+void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x, int map_y);
 
 //ft_memcpy.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
-void	draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side, 
-					int column_index);
+void	draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
+void	calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end);
+int		choose_wall_color(int hit_side);
+void	draw_floor_and_ceiling(t_img *img, int x, int start, int end);
+void	draw_wall(t_img *img, int x, int start, int end, int wall_color);
+
 //ft_split.c
 char	**ft_split(char const *s, char c);
 
