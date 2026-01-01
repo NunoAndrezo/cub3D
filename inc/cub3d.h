@@ -90,9 +90,17 @@ typedef struct	s_map
 
 typedef struct s_ray
 {
-	float	angle;
-	float	ray_x;
-	float	ray_y;
+	float	angle;        // radius angle (rad)
+	float	ray_x;        // current position X (tile units)
+	float	ray_y;        // current position Y (tile units)
+	float	x_step;       // increment in X
+	float	y_step;       // increment in Y
+	float	side_dist_x;
+	float	side_dist_y;
+	float	delta_dist_x;
+	float	delta_dist_y;
+	float	distance;     // distance till the wall
+	int		hit_side;     // 0 = vertical | 1 = horizontal
 	float	final_distance;
 	/* per-ray configuration */
 	int		num_rays; /* 0 = auto (image width) */
@@ -204,8 +212,8 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
-void draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side);
-
+void	draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side, 
+					int column_index);
 //ft_split.c
 char	**ft_split(char const *s, char c);
 
