@@ -3,18 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 21:14:49 by joaoleote         #+#    #+#             */
-/*   Updated: 2026/01/01 16:45:56 by joaoleote        ###   ########.fr       */
+/*   Updated: 2026/01/01 23:00:18 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
 static void	init_ray(t_game *g, t_ray *r, float angle);
-static void	dda_step(t_ray *r, int *map_x, int *map_y);
-static float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y);
 static void	choose_hit(t_game *g, t_ray *r, int column);
 
 void	lets_see_them_rays(t_game *g)
@@ -52,7 +50,7 @@ static void	init_ray(t_game *g, t_ray *r, float angle)
 	init_ray_distances(r, pos_x, pos_y, map_x, map_y);
 }
 
-static void	dda_step(t_ray *r, int *map_x, int *map_y)
+void	dda_step(t_ray *r, int *map_x, int *map_y)
 {
 	if (r->side_dist_x < r->side_dist_y)
 	{
@@ -74,7 +72,7 @@ static void	dda_step(t_ray *r, int *map_x, int *map_y)
 	}
 }
 
-static float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y)
+float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y)
 {
 	if (r->hit_side == 0)
 		return ((map_x - g->player.pos_x + (r->x_step < 0)) / r->x_step);
@@ -83,7 +81,7 @@ static float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y)
 
 static void	choose_hit(t_game *g, t_ray *r, int column)
 {
-	if (g->ray.debug_rays)
-		draw_rays(g, r->ray_x, r->ray_y, r->hit_side);
+/*	if (g->ray.debug_rays)
+		draw_rays(g, r->ray_x, r->ray_y, r->hit_side);*/
 	draw_3Dgame(g, r->angle, r->distance, r->hit_side, column);
 }
