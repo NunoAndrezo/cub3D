@@ -6,7 +6,7 @@
 /*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/01 16:34:05 by joaoleote         #+#    #+#             */
-/*   Updated: 2026/01/01 16:46:03 by joaoleote        ###   ########.fr       */
+/*   Updated: 2026/01/02 18:58:27 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,9 @@ int	is_wall(t_game *g, int x, int y)
 		return (1);
 	if (g->map.map[y][x] == '1')
 		return (1);
+	if (g->map.map[y][x] == ' ')
+		return (1);
 	return (0);
-}
-
-void	draw_rays(t_game *g, float x, float y, int side)
-{
-	int	color;
-	int px;
-	int py;
-
-	px = (int)(x * ONE_TILE_SIDE);
-	py = (int)(y * ONE_TILE_SIDE);
-	color = COLOR_YELLOW;
-	if (side == 0)
-		color = COLOR_RED;
-	if (side == 1)
-		color = COLOR_BLUE;
-	my_store_pixel_in_image(&g->image, px, py, color);
 }
 
 void	cast_ray(t_game *g, t_ray *r)
@@ -67,7 +53,7 @@ void	init_ray_dir_pos(t_game *g, t_ray *r, float angle,
 	*map_y = (int)(*pos_y);
 }
 
-void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x, 
+void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x,
 							int map_y)
 {
 	if (r->x_step != 0.0f)
