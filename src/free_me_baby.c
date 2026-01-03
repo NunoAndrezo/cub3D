@@ -69,25 +69,25 @@ static void free_textures_paths(t_game *game)
 
 static void free_texture_images(t_game *game)
 {
-	if (game->textures.north_img)
+	if (game->textures.north.img_ptr)
 	{
-		mlx_destroy_image(game->mlx_struct, game->textures.north_img);
-		game->textures.north_img = NULL;
+		mlx_destroy_image(game->mlx_struct, game->textures.north.img_ptr);
+		game->textures.north.img_ptr = NULL;
 	}
-	if (game->textures.south_img)
+	if (game->textures.south.img_ptr)
 	{
-		mlx_destroy_image(game->mlx_struct, game->textures.south_img);
-		game->textures.south_img = NULL;
+		mlx_destroy_image(game->mlx_struct, game->textures.south.img_ptr);
+		game->textures.south.img_ptr = NULL;
 	}
-	if (game->textures.west_img)
+	if (game->textures.west.img_ptr)
 	{
-		mlx_destroy_image(game->mlx_struct, game->textures.west_img);
-		game->textures.west_img = NULL;
+		mlx_destroy_image(game->mlx_struct, game->textures.west.img_ptr);
+		game->textures.west.img_ptr = NULL;
 	}
-	if (game->textures.east_img)
+	if (game->textures.east.img_ptr)
 	{
-		mlx_destroy_image(game->mlx_struct, game->textures.east_img);
-		game->textures.east_img = NULL;
+		mlx_destroy_image(game->mlx_struct, game->textures.east.img_ptr);
+		game->textures.east.img_ptr = NULL;
 	}
 	if (game->image.img_ptr)
 	{

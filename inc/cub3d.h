@@ -133,13 +133,12 @@ typedef struct s_texture
 	char	*south_texture;
 	char	*west_texture;
 	char	*east_texture;
-	char	*north_img;
-	char	*south_img;
-	char	*west_img;
-	char	*east_img;
+	
+	t_img	north;
+	t_img	south;
+	t_img	west;
+	t_img	east;
 
-	int		texture_w;
-	int		texture_h;
 	int		floor_color[3];
 	int		ceiling_color[3];
 }	t_texture;
@@ -226,10 +225,9 @@ void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
 void	draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
-int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end);
-int		choose_wall_color(int hit_side);
+int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end, int *line_height);
 void	draw_floor_and_ceiling(t_img *img, int x, int start, int end, t_game *game);
-void	draw_wall(t_img *img, int x, int start, int end, int wall_color, t_game *game);
+void	draw_wall(t_img *img, int x, int start, int end, int line_h, t_game *game, float angle, float dist, int hit_side);
 
 //ft_split.c
 char	**ft_split(char const *s, char c);
