@@ -88,7 +88,6 @@ void change_player_mov(t_game *game)
 		nx += game->player.player_delta_x * displacement;
 		ny += game->player.player_delta_y * displacement;
 	}
-	// Check if new position is walkable
 	if (is_colision(game, nx, ny) == false)
 	{
 		game->player.pos_x = nx;
