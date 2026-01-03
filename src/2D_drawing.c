@@ -2,7 +2,8 @@
 
 void draw_player(t_game *game)
 {
-	int	size;
+	(void)game;
+/* 	int	size;
 	int	player_pixel_x;
 	int	player_pixel_y;
 	int	y;
@@ -23,49 +24,51 @@ void draw_player(t_game *game)
 			x++;
 		}
 		y++;
-	}
+	} */
 }
 
 void	draw_map_to_image(t_game *game, t_img *target)
 {
-	int	real_y;
-	int	real_x;
-	int world_x;
-	int world_y;
-	int	color;
-
+	(void)game;
 	(void)target;
-	real_y = 0;
-	int xrow;
-	while (game->map.map[real_y])
-	{
-		real_x = 0;
-		xrow = ft_strlen(game->map.map[real_y]);
-		while (real_x < xrow)
-		{
-			world_y = real_y * ONE_TILE_SIDE;
-			world_x = real_x * ONE_TILE_SIDE;
-			if (game->map.map[real_y][real_x] == '1')
-				color = COLOR_WHITE;
-			else if (game->map.map[real_y][real_x] == ' ')
-				color = COLOR_GREY;
-			else
-				color = COLOR_BLACK;
-			for (int y = 0; y < ONE_TILE_SIDE; y++)
-				for (int x = 0; x < ONE_TILE_SIDE; x++)
-					my_store_pixel_in_image(target, world_x + x, world_y + y, color);
-/* 			// draw cell borders
-			for (int i = 0; i < ONE_TILE_SIDE; i++)
-			{
-				my_store_pixel_in_image(target, world_x + i, world_y, COLOR_GREY); // top
-				my_store_pixel_in_image(target, world_x + i, world_y + ONE_TILE_SIDE - 1, COLOR_GREY); // bottom
-				my_store_pixel_in_image(target, world_x, world_y + i, COLOR_GREY); // left
-				my_store_pixel_in_image(target, world_x + ONE_TILE_SIDE - 1, world_y + i, COLOR_GREY); // right
-			} */
-			real_x++;
-		}
-		real_y++;
-	}
+	// int	real_y;
+	// int	real_x;
+	// int world_x;
+	// int world_y;
+	// int	color;
+
+	// (void)target;
+	// real_y = 0;
+	// int xrow;
+	// while (game->map.map[real_y])
+	// {
+	// 	real_x = 0;
+	// 	xrow = ft_strlen(game->map.map[real_y]);
+	// 	while (real_x < xrow)
+	// 	{
+	// 		world_y = real_y * ONE_TILE_SIDE;
+	// 		world_x = real_x * ONE_TILE_SIDE;
+	// 		if (game->map.map[real_y][real_x] == '1')
+	// 			color = COLOR_WHITE;
+	// 		else if (game->map.map[real_y][real_x] == ' ')
+	// 			color = COLOR_GREY;
+	// 		else
+	// 			color = COLOR_BLACK;
+	// 		for (int y = 0; y < ONE_TILE_SIDE; y++)
+	// 			for (int x = 0; x < ONE_TILE_SIDE; x++)
+	// 				my_store_pixel_in_image(target, world_x + x, world_y + y, color);
+	// 		// draw cell borders
+	// 		for (int i = 0; i < ONE_TILE_SIDE; i++)
+	// 		{
+	// 			my_store_pixel_in_image(target, world_x + i, world_y, COLOR_GREY); // top
+	// 			my_store_pixel_in_image(target, world_x + i, world_y + ONE_TILE_SIDE - 1, COLOR_GREY); // bottom
+	// 			my_store_pixel_in_image(target, world_x, world_y + i, COLOR_GREY); // left
+	// 			my_store_pixel_in_image(target, world_x + ONE_TILE_SIDE - 1, world_y + i, COLOR_GREY); // right
+	// 		}
+	// 		real_x++;
+	// 	}
+	// 	real_y++;
+	// }
 }
 
 // Detailed explanation:

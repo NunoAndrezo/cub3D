@@ -66,11 +66,13 @@ static void	initiate_player(t_game *game)
 	game->player.pos_x = game->map.player_start_x + 0.5; // center of the tile
 	game->player.pos_y = game->map.player_start_y + 0.5; // center of the tile
 	game->player.dir = game->map.player_orientation;
-	//game->player.move_speed = 5; // pixels per frame
 	game->player.move_speed = (float)PLAYER_MOV_SPEED;
+	/* default runtime multipliers */
+	game->player.player_speed_multiplier = 0.5f;
+	game->player.player_rot_multiplier = 0.3f;
 	if (game->player.dir == 'N')
 	{
-		game->player.player_angle = 270.0f; // graus
+		game->player.player_angle = 270.0f; // degrees
 	}
 	else if (game->player.dir == 'S')
 	{
@@ -88,7 +90,7 @@ static void	initiate_player(t_game *game)
 	game->player.player_delta_x = -cosf(deg_to_rad(game->player.player_angle)); // we use -cos because 0 degrees is to the right, and we want to go left when angle is 180
 	game->player.player_delta_y = -sinf(deg_to_rad(game->player.player_angle)); //same here, -sin because 0 degrees is to the right, and we want to go up when angle is 270
 	/* defaults for rendering/config that moved into player/ray structs */
-	game->player.fov_degrees = 60.0f; 
-	/* default to auto (0) so raycasting uses image width unless overridden */
-	game->ray.num_rays = 0;
+	game->player.fov_degrees = 45.0f; // swap to 60 or 90 later
+	game->ray.num_rays = 10; // default to auto (0) so raycasting uses image width unless overridden
+	
 }

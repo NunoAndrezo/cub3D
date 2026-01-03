@@ -32,6 +32,36 @@ static int	key_press(int key_sym, t_game *game)
 		game->player.player_rot_left = true;
 	if (key_sym == XK_Right)
 		game->player.player_rot_right = true;
+
+	/* Runtime tuning: +/- adjust movement multiplier, [/] adjust rotation multiplier */
+	if (key_sym == XK_plus || key_sym == XK_equal) /* + */
+	{
+		game->player.player_speed_multiplier += 0.1f;
+		if (game->player.player_speed_multiplier > 4.0f)
+			game->player.player_speed_multiplier = 4.0f;
+		printf("Move multiplier: %.2f\n", game->player.player_speed_multiplier);
+	}
+	if (key_sym == XK_minus) /* - */
+	{
+		game->player.player_speed_multiplier -= 0.1f;
+		if (game->player.player_speed_multiplier < 0.1f)
+			game->player.player_speed_multiplier = 0.1f;
+		printf("Move multiplier: %.2f\n", game->player.player_speed_multiplier);
+	}
+	if (key_sym == XK_bracketright) /* ] increase rotation */
+	{
+		game->player.player_rot_multiplier += 0.1f;
+		if (game->player.player_rot_multiplier > 4.0f)
+			game->player.player_rot_multiplier = 4.0f;
+		printf("Rot multiplier: %.2f\n", game->player.player_rot_multiplier);
+	}
+	if (key_sym == XK_bracketleft) /* [ decrease rotation */
+	{
+		game->player.player_rot_multiplier -= 0.1f;
+		if (game->player.player_rot_multiplier < 0.1f)
+			game->player.player_rot_multiplier = 0.1f;
+		printf("Rot multiplier: %.2f\n", game->player.player_rot_multiplier);
+	}
 	return (0);
 }
 

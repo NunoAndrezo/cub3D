@@ -23,7 +23,9 @@ void lets_see_them_rays(t_game *g)
 	float	angle;
 
 	n = g->image.width;
-	g->ray.num_rays = n;
+	if (g->ray.num_rays > 0 && g->ray.num_rays < g->image.width)
+		n = g->ray.num_rays;
+	g->ray.num_rays = n; // replace with n, im just testing
 	step = g->player.fov_degrees / (float)n;
 	i = 0;
 	while (i < n)

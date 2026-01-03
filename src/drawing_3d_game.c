@@ -27,8 +27,8 @@ void	draw_3Dgame(t_game *game, float angle, float best_dist,
 		&draw_end))
 		return;
 	wall_color = choose_wall_color(hit_side);
-	draw_floor_and_ceiling(&game->image, x, draw_start, draw_end);
-	draw_wall(&game->image, x, draw_start, draw_end, wall_color);
+	draw_floor_and_ceiling(&game->image, x, draw_start, draw_end, game);
+	draw_wall(&game->image, x, draw_start, draw_end, wall_color, game);
 }
 
 int	calculate_projection(t_game *g, float ray_angle, float dist,
@@ -65,32 +65,33 @@ int	choose_wall_color(int hit_side)
 	return (0xBBBBBB);
 }
 
-void	draw_floor_and_ceiling(t_img *img, int x, int start, int end)
+void	draw_floor_and_ceiling(t_img *img, int x, int start, int end, t_game *game)
 {
 	int	y;
 
 	y = 0;
 	while (y < start)
 	{
-		my_store_pixel_in_image(img, x, y, 0x87CEEB);
+		my_store_pixel_in_image(img, x, y, rgb_to_color(game->textures.ceiling_color)); // instead of this, we will use ceiling color
 		y++;
 	}
 	y = end + 1;
 	while (y < img->height)
 	{
-		my_store_pixel_in_image(img, x, y, 0x444444);
+		my_store_pixel_in_image(img, x, y, rgb_to_color(game->textures.floor_color)); // instead of this, we will use floor color
 		y++;
 	}
 }
 
-void	draw_wall(t_img *img, int x, int start, int end, int color)
+void	draw_wall(t_img *img, int x, int start, int end, int color, t_game *game)
 {
 	int	y;
 
 	y = start;
+	(void)game;
 	while (y <= end)
 	{
-		my_store_pixel_in_image(img, x, y, color);
+		my_store_pixel_in_image(img, x, y, color); // instead of this, we will use texture mapping
 		y++;
 	}
 }

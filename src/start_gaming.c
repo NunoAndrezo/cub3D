@@ -12,24 +12,28 @@ void	start_gaming(t_game *game)
 
 int	main_loop(t_game *game)
 {
-	uint64_t		current_time;
-	uint64_t		elapsed;
-	uint64_t		accu;
+	uint64_t	frame_start;
+	uint64_t	frame_end;
+	uint64_t	elapsed;
+	const uint64_t target_frame_ms = 16; /* ~60 FPS */
 
-	// reduce accumulator to ~2ms for ~500Hz updates
-	accu = 0;
-	current_time = get_time_in_ms();
-	elapsed = current_time - game->start_time;
-	game->start_time = current_time;
+	/* frame timing: compute elapsed since last frame (ms) */
+	frame_start = get_time_in_ms();
+	elapsed = frame_start - game->start_time;
+	if (elapsed == 0)
+		elapsed = 1; /* avoid zero delta */
+	game->start_time = frame_start;
 	game->delta_time = elapsed;
-	accu += elapsed;
-	// Update game state at fixed intervals (~16 ms => ~60 updates/sec), explaining the math: 16 ms per update means 1000 ms / 16 ms = 62.5 updates per second
-	while (accu >= 16)
-	{
-		update_player(game);
-		accu -= 16;
-	}
+
+	/* update once per frame using delta time (ms) so movement is frame-rate independent */
+	update_player(game);
 	game_loop(game);
+
+	/* simple frame cap to smooth presentation: sleep remaining time to target ~60 FPS */
+	frame_end = get_time_in_ms();
+	uint64_t frame_time = frame_end - frame_start;
+	if (frame_time < target_frame_ms)
+		usleep((target_frame_ms - frame_time) * 1000);
 	return (0);
 }
 
@@ -46,7 +50,7 @@ static int game_loop(t_game *game)
 	row_bytes = (size_t)game->image.line_length * (size_t)game->image.height;
 	if (game->bg_image.img_pixels_ptr && game->image.img_pixels_ptr)
 		ft_memcpy(game->image.img_pixels_ptr, game->bg_image.img_pixels_ptr, row_bytes);
-	draw_player(game);
+	draw_player(game); //its not doing anything right now
 	lets_see_them_rays(game);
 	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
 	return (0);

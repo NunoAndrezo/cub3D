@@ -122,6 +122,9 @@ typedef struct s_player
 	bool	player_mov_right;
 	bool	player_rot_left;
 	bool	player_rot_right;
+	/* runtime tunable multipliers (1.0 = default) */
+	float	player_speed_multiplier; /* scales linear movement */
+	float	player_rot_multiplier; /* scales angular rotation */
 }	t_player;
 
 typedef struct s_texture
@@ -225,8 +228,8 @@ void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 void	draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
 int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end);
 int		choose_wall_color(int hit_side);
-void	draw_floor_and_ceiling(t_img *img, int x, int start, int end);
-void	draw_wall(t_img *img, int x, int start, int end, int wall_color);
+void	draw_floor_and_ceiling(t_img *img, int x, int start, int end, t_game *game);
+void	draw_wall(t_img *img, int x, int start, int end, int wall_color, t_game *game);
 
 //ft_split.c
 char	**ft_split(char const *s, char c);
@@ -252,13 +255,16 @@ void	draw_player(t_game *game);
 void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
 
 //handle_player_mov_and_rot.c
-void change_player_rot(t_game *game);
-void change_player_mov(t_game *game);
+void	change_player_rot(t_game *game);
+void	change_player_mov(t_game *game);
 
 //load_game.c
 void	load_game(t_game *game);
 
 //strip_newline.c
-void strip_newline(char *str);
+void	strip_newline(char *str);
+
+//rgb_to_color.c
+int		rgb_to_color(int rgb[3]);
 
 #endif
