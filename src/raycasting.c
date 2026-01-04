@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 21:14:49 by joaoleote         #+#    #+#             */
-/*   Updated: 2026/01/02 18:52:39 by joaoleote        ###   ########.fr       */
+/*   Updated: 2026/01/04 14:47:11 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void lets_see_them_rays(t_game *g)
 	n = g->image.width;
 	if (g->ray.num_rays > 0 && g->ray.num_rays < g->image.width)
 		n = g->ray.num_rays;
-	g->ray.num_rays = n; // replace with n, im just testing
+	g->ray.num_rays = n;
 	step = g->player.fov_degrees / (float)n;
 	i = 0;
 	while (i < n)
@@ -81,5 +81,5 @@ float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y)
 
 static void	choose_hit(t_game *g, t_ray *r, int column)
 {
-	draw_3Dgame(g, r->angle, r->distance, r->hit_side, column);
+	draw_3dgame(g, r->angle, r->distance, r->hit_side, column);
 }

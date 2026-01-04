@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub3d.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/04 12:44:41 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 13:19:21 by nuno             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUB3D_H
 #define CUB3D_H
 
@@ -148,12 +160,10 @@ typedef struct	s_game
 	t_map				map;
 	void				*mlx_struct;
 	void				*win_struct;
-	int					win_w; /* current window width */
-	int					win_h; /* current window height */
+	int					win_w;
+	int					win_h;
 	t_img				image;
-	/* background image contains the static map rendered once to speed up per-frame draws */
 	t_img				bg_image;
-	/* rendering config moved into player/ray structs */
 	t_player			player;
 	float				max_distance;
 	uint64_t			start_time;
@@ -224,10 +234,12 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
-void	draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
-int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end, int *line_height);
+void	draw_3dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
 void	draw_floor_and_ceiling(t_img *img, int x, int start, int end, t_game *game);
 void	draw_wall(t_img *img, int x, int start, int end, int line_h, t_game *game, float angle, float dist, int hit_side);
+
+//drawing_3d_game_utils.c
+int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end, int *line_height);
 
 //ft_split.c
 char	**ft_split(char const *s, char c);

@@ -1,8 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_me_baby.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/04 13:04:07 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 14:46:50 by nuno             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/cub3d.h"
 
-static void free_game_map(t_game *game);
-static void free_textures_paths(t_game *game);
-static void free_texture_images(t_game *game);
+static void	free_game_map(t_game *game);
+static void	free_textures_paths(t_game *game);
+static void	free_texture_images(t_game *game);
+static void	free_textures_images_supp(t_game *game);
 
 void	free_game(t_game *game)
 {
@@ -22,7 +35,7 @@ void	free_game(t_game *game)
 	}
 }
 
-static void free_game_map(t_game *game)
+static void	free_game_map(t_game *game)
 {
 	int	i;
 
@@ -43,7 +56,7 @@ static void free_game_map(t_game *game)
 	}
 }
 
-static void free_textures_paths(t_game *game)
+static void	free_textures_paths(t_game *game)
 {
 	if (game->textures.north_texture)
 	{
@@ -67,7 +80,7 @@ static void free_textures_paths(t_game *game)
 	}
 }
 
-static void free_texture_images(t_game *game)
+static void	free_texture_images(t_game *game)
 {
 	if (game->textures.north.img_ptr)
 	{
@@ -84,6 +97,11 @@ static void free_texture_images(t_game *game)
 		mlx_destroy_image(game->mlx_struct, game->textures.west.img_ptr);
 		game->textures.west.img_ptr = NULL;
 	}
+	free_textures_images_supp(game);
+}
+
+static void	free_textures_images_supp(t_game *game)
+{
 	if (game->textures.east.img_ptr)
 	{
 		mlx_destroy_image(game->mlx_struct, game->textures.east.img_ptr);
