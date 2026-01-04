@@ -6,13 +6,13 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:07:33 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:07:34 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/04 23:05:17 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-static bool	check_max_dimensions(t_game *game);
+static void	check_max_dimensions(t_game *game);
 
 int main(int ac, char **av)
 {
@@ -22,8 +22,9 @@ int main(int ac, char **av)
 	setup_signals();
 	ft_bzero(&game, sizeof(t_game));
 	handle_map(av[1], &game);
-	if (map_is_valid(&game) == true && last_map_adjustments(&game) && check_max_dimensions(&game))
+	if (map_is_valid(&game) == true && last_map_adjustments(&game))
 	{
+		check_max_dimensions(&game);
 		initiate_game(&game);
 		load_game(&game);
 		start_gaming(&game);
@@ -38,7 +39,7 @@ int main(int ac, char **av)
 	return (0);
 }
 
-static bool	check_max_dimensions(t_game *game)
+static void	check_max_dimensions(t_game *game)
 {
 	if (WWIDTH == 1920 && WHEIGHT == 1000)
 	{
@@ -49,7 +50,6 @@ static bool	check_max_dimensions(t_game *game)
 			exit(EXIT_FAILURE);
 		}
 	}
-	return (true);
 }
 
 // need to implement window resizing? if so, how to handle the image buffer resizing? simple, destroy and recreate it? what about aspect ratio? simple, just scale the image to fit the new window size, even if it distorts a bit

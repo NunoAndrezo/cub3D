@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:07:16 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 15:17:19 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/04 23:00:52 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ void handle_map(char *map_file, t_game *game)
 	ft_bzero(&game->textures, sizeof(t_texture));
 	game->map.map_file = map_file;
 	if (!game->map.map_file)
-		perror("Error\nNo map file provided\n"), exit(EXIT_FAILURE);
+		perror("Error\nNo map file provided\n"), free_game(game), exit(EXIT_FAILURE);
 	if (count_and_store_number_of_lines_and_check_textures_colors(game, game->map.map_file) <= 0)
-		perror("Error\nMap file is empty\n"), exit(EXIT_FAILURE);
+		perror("Error\nMap file is empty\n"), free_game(game), exit(EXIT_FAILURE);
 	if (!game->textures.north_texture || !game->textures.south_texture ||
 		!game->textures.west_texture || !game->textures.east_texture)
 		perror("Error\nMissing texture paths in map file\n"), free_game(game), exit(EXIT_FAILURE);
@@ -48,7 +48,7 @@ static int count_and_store_number_of_lines_and_check_textures_colors(t_game *gam
 	in_map = false;
 	fd = open(map_file, O_RDONLY);
 	if (fd < 0)
-		perror("Error\nCannot open map file\n"), exit(EXIT_FAILURE);
+		perror("Error\nCannot open map file\n"), free_game(game), exit(EXIT_FAILURE);
 	game->map.y_max = 0;
 	line = get_next_line(fd);
 	while (line)
@@ -82,10 +82,10 @@ static void copy_map(char *map_file, t_game *game)
 	allocate_map(game);
 	fd = open(map_file, O_RDONLY);
 	if (fd < 0)
-		perror("Error\nCannot open map file\n"), exit(EXIT_FAILURE);
+		perror("Error\nCannot open map file\n"), free_game(game), exit(EXIT_FAILURE);
 	line = get_next_line(fd);
 	if (!line)
-		perror("Error\nEmpty or invalid map file\n"), close(fd), exit(EXIT_FAILURE);
+		perror("Error\nEmpty or invalid map file\n"), close(fd), free_game(game), exit(EXIT_FAILURE);
 	if (line && line[ft_strlen(line) - 1] == '\n')
 		line[ft_strlen(line) - 1] = '\0';
 	while (line)

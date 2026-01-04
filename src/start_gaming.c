@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:08:15 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 21:41:52 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/04 23:15:18 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ void	start_gaming(t_game *game)
 
 int	main_loop(t_game *game)
 {
-	uint64_t	frame_start;
-	uint64_t	frame_end;
-	uint64_t	elapsed;
-	const uint64_t target_frame_ms = 16; /* ~60 FPS */
+	uint64_t		frame_start;
+	uint64_t		frame_end;
+	uint64_t		elapsed;
+	const uint64_t	target_frame_ms = 16; /* ~60 FPS */
 
 	/* frame timing: compute elapsed since last frame (ms) */
 	frame_start = get_time_in_ms();
