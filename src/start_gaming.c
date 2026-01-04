@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:08:15 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 14:50:52 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/04 15:24:15 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,11 @@ static int game_loop(t_game *game)
 {
 	size_t row_bytes;
 
+	lets_see_them_rays(game);
 	row_bytes = (size_t)game->image.line_length * (size_t)game->image.height;
 	if (game->bg_image.img_pixels_ptr && game->image.img_pixels_ptr)
 		ft_memcpy(game->image.img_pixels_ptr, game->bg_image.img_pixels_ptr, row_bytes);
 	draw_player(game); //its not doing anything right now
-	lets_see_them_rays(game);
 	mlx_put_image_to_window(game->mlx_struct, game->win_struct, game->image.img_ptr, 0, 0);
 	return (0);
 }

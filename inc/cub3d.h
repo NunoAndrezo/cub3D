@@ -6,7 +6,7 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 12:44:41 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:19:21 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/04 15:18:01 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,8 +185,14 @@ void	parse(int ac, char **av);
 //free_me_baby.c
 void	free_game(t_game *game);
 
+//free_me_baby2.c
+void	free_split_values(char **values);
+
 //handle_map.c
 void	handle_map(char *map_file, t_game *game);
+
+//handle_map_support.c
+bool is_texture_or_color_line(t_game *game, char *line, int fd);
 
 //map_validation.c
 bool	last_map_adjustments(t_game *game);

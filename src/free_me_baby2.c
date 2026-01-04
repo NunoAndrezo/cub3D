@@ -1,27 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncmp.c                                       :+:      :+:    :+:   */
+/*   free_me_baby2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/04 13:04:40 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 15:12:39 by nuno             ###   ########.fr       */
+/*   Created: 2026/01/04 15:17:45 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 15:17:54 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-int	ft_strncmp(const char *str1, const char *str2, size_t n)
+void	free_split_values(char **values)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	while ((str2[i] != '\0' || str1[i] != '\0') && (i < n))
+	while (values[i])
 	{
-		if (str1[i] != str2[i])
-			return ((unsigned char)str1[i] - (unsigned char)str2[i]);
+		free(values[i]);
 		i++;
 	}
-	return (0);
+	free(values);
 }
