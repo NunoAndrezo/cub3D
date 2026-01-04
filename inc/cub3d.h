@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub3d.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/04 12:44:41 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 15:18:01 by nuno             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUB3D_H
 #define CUB3D_H
 
@@ -13,7 +25,7 @@
 #endif
 
 #ifndef PLAYER_MOV_SPEED
-#define PLAYER_MOV_SPEED 2
+#define PLAYER_MOV_SPEED 1
 #endif
 
 /* size in pixels to draw each map cell when drawing the top-down map.
@@ -81,8 +93,8 @@ typedef struct	s_map
 	char	**map;
 	char	*map_file;
 	char	player_orientation;
-	float		player_start_x;
-	float		player_start_y;
+	float	player_start_x;
+	float	player_start_y;
 	int		y_max;
 	int		y_start;
 	int		x_max;
@@ -90,14 +102,20 @@ typedef struct	s_map
 
 typedef struct s_ray
 {
-	float	angle;
-	float	ray_x;
-	float	ray_y;
+	float	angle;        // radius angle (rad)
+	float	ray_x;        // current position X (tile units)
+	float	ray_y;        // current position Y (tile units)
+	float	x_step;       // increment in X
+	float	y_step;       // increment in Y
+	float	side_dist_x;
+	float	side_dist_y;
+	float	delta_dist_x;
+	float	delta_dist_y;
+	float	distance;     // distance till the wall
+	int		hit_side;     // 0 = vertical | 1 = horizontal
 	float	final_distance;
 	/* per-ray configuration */
 	int		num_rays; /* 0 = auto (image width) */
-	bool	debug_rays; /* draw debug colors for hits */
-
 }	t_ray;
 
 typedef struct s_player
@@ -116,6 +134,9 @@ typedef struct s_player
 	bool	player_mov_right;
 	bool	player_rot_left;
 	bool	player_rot_right;
+	/* runtime tunable multipliers (1.0 = default) */
+	float	player_speed_multiplier; /* scales linear movement */
+	float	player_rot_multiplier; /* scales angular rotation */
 }	t_player;
 
 typedef struct s_texture
@@ -124,6 +145,12 @@ typedef struct s_texture
 	char	*south_texture;
 	char	*west_texture;
 	char	*east_texture;
+	
+	t_img	north;
+	t_img	south;
+	t_img	west;
+	t_img	east;
+
 	int		floor_color[3];
 	int		ceiling_color[3];
 }	t_texture;
@@ -133,12 +160,10 @@ typedef struct	s_game
 	t_map				map;
 	void				*mlx_struct;
 	void				*win_struct;
-	int					win_w; /* current window width */
-	int					win_h; /* current window height */
+	int					win_w;
+	int					win_h;
 	t_img				image;
-	/* background image contains the static map rendered once to speed up per-frame draws */
 	t_img				bg_image;
-	/* rendering config moved into player/ray structs */
 	t_player			player;
 	float				max_distance;
 	uint64_t			start_time;
@@ -160,15 +185,21 @@ void	parse(int ac, char **av);
 //free_me_baby.c
 void	free_game(t_game *game);
 
+//free_me_baby2.c
+void	free_split_values(char **values);
+
 //handle_map.c
 void	handle_map(char *map_file, t_game *game);
+
+//handle_map_support.c
+bool is_texture_or_color_line(t_game *game, char *line, int fd);
 
 //map_validation.c
 bool	last_map_adjustments(t_game *game);
 bool	map_is_valid(t_game *game);
 
 // initiate.c
-void	initiate_mlx(t_game *game);
+void	initiate_game(t_game *game);
 
 //setup_signals.c
 void	setup_signals(void);
@@ -195,16 +226,26 @@ bool	flood_fill(t_game *game);
 
 //raycasting.c
 void	lets_see_them_rays(t_game *game);
+float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y);
+void	dda_step(t_ray *r, int *map_x, int *map_y);
 
-void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
-//int		my_clear_image(t_game *game);
+//raycasting_utils.c
+int		is_wall(t_game *g, int x, int y);
+void	cast_ray(t_game *g, t_ray *r);
+void	init_ray_dir_pos(t_game *g, t_ray *r, float angle, float *pos_x, float *pos_y, int *map_x, int *map_y);
+void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x, int map_y);
 
 //ft_memcpy.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
-void draw_3Dgame(t_game *game, float angle, float best_dist, int hit_side);
+void	draw_3dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
+void	draw_floor_and_ceiling(t_img *img, int x, int start, int end, t_game *game);
+void	draw_wall(t_img *img, int x, int start, int end, int line_h, t_game *game, float angle, float dist, int hit_side);
+
+//drawing_3d_game_utils.c
+int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end, int *line_height);
 
 //ft_split.c
 char	**ft_split(char const *s, char c);
@@ -214,5 +255,32 @@ int		ft_atoi(const char *str);
 
 //ft_strncmp.c
 int		ft_strncmp(const char *str1, const char *str2, size_t n);
+
+//start_time.c
+uint64_t	get_time_in_ms(void);
+
+//start_gaming.c
+void	start_gaming(t_game *game);
+
+//mlx_events.c
+void	handle_mlx_events(t_game *game);
+
+//2D_drawing.c
+void	draw_map_to_image(t_game *game, t_img *target);
+void	draw_player(t_game *game);
+void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
+
+//handle_player_mov_and_rot.c
+void	change_player_rot(t_game *game);
+void	change_player_mov(t_game *game);
+
+//load_game.c
+void	load_game(t_game *game);
+
+//strip_newline.c
+void	strip_newline(char *str);
+
+//rgb_to_color.c
+int		rgb_to_color(int rgb[3]);
 
 #endif

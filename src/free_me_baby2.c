@@ -1,26 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*   free_me_baby2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/04 13:04:24 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:04:25 by nuno             ###   ########.fr       */
+/*   Created: 2026/01/04 15:17:45 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 15:17:54 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-void	ft_bzero(void *s, size_t n)
+void	free_split_values(char **values)
 {
-	unsigned char	*ptr;
+	int	i;
 
-	ptr = (unsigned char *) s;
-	while (n > 0)
+	i = 0;
+	while (values[i])
 	{
-		*ptr = 0;
-		ptr++;
-		n--;
+		free(values[i]);
+		i++;
 	}
+	free(values);
 }

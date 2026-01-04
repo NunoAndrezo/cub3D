@@ -27,7 +27,12 @@ SRC_FILES	=	main.c parsing.c initiate_game.c map_validation.c \
 				ft_bzero.c ft_calloc.c utils.c setup_signals.c \
 				flood_fill.c free_me_baby.c raycasting.c ft_memcpy.c \
 				my_math.c drawing_3d_game.c ft_split.c ft_atoi.c \
-				ft_strncmp.c
+				ft_strncmp.c start_time.c start_gaming.c mlx_events.c \
+				2D_drawing.c handle_player_mov_and_rot.c load_game.c \
+				strip_newline.c raycasting_utils.c rgb_to_color.c \
+				drawing_3d_game_utils.c handle_map_support.c \
+				free_me_baby2.c
+
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
 #paths

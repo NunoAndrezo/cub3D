@@ -1,8 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   flood_fill.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/04 13:04:02 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 14:12:05 by nuno             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/cub3d.h"
 
-static void allocate_map_for_flood_fill(char ***flood_fill_map, int y_max, t_game *game);
-static void copy_map_for_flood_fill(t_game *game, char ***flood_fill_map, int y_max);
-static bool	flood_fill_the_map(char **flood_fill_map, int start_x, int start_y, int y_max);
+static void	allocate_map_for_flood_fill(char ***flood_fill_map,
+				int y_max, t_game *game);
+static void	copy_map_for_flood_fill(t_game *game,
+				char ***flood_fill_map, int y_max);
+static bool	flood_fill_the_map(char **flood_fill_map,
+				int start_x, int start_y, int y_max);
 static void	free_flood_fill_map(char ***flood_fill_map, int y_max);
 
 bool	flood_fill(t_game *game)
@@ -13,13 +28,14 @@ bool	flood_fill(t_game *game)
 	good_map = false;
 	flood_fill_map = NULL;
 	copy_map_for_flood_fill(game, &flood_fill_map, game->map.y_max);
-	good_map = flood_fill_the_map(flood_fill_map, game->map.player_start_x, game->map.player_start_y, game->map.y_max);
+	good_map = flood_fill_the_map(flood_fill_map, game->map.player_start_x,
+			game->map.player_start_y, game->map.y_max);
 	free_flood_fill_map(&flood_fill_map, game->map.y_max);
 	return (good_map);
 }
 
-
-static void copy_map_for_flood_fill(t_game *game, char ***flood_fill_map, int y_max)
+static void	copy_map_for_flood_fill(t_game *game,
+	char ***flood_fill_map, int y_max)
 {
 	int		i;
 
@@ -30,7 +46,8 @@ static void copy_map_for_flood_fill(t_game *game, char ***flood_fill_map, int y_
 		(*flood_fill_map)[i] = ft_strdup(game->map.map[i]);
 		if (!(*flood_fill_map)[i])
 		{
-			perror("Error\nMemory allocation failed while copying map for flood fill\n");
+			perror("Error\nMemory allocation \
+				failed while copying map for flood fill\n");
 			free_flood_fill_map(flood_fill_map, y_max);
 			free_game(game);
 			exit(EXIT_FAILURE);
@@ -39,7 +56,8 @@ static void copy_map_for_flood_fill(t_game *game, char ***flood_fill_map, int y_
 	}
 }
 
-static void allocate_map_for_flood_fill(char ***flood_fill_map, int y_max, t_game *game)
+static void	allocate_map_for_flood_fill(char ***flood_fill_map,
+	int y_max, t_game *game)
 {
 	*flood_fill_map = (char **)ft_calloc((y_max + 1), sizeof(char *));
 	if (!*flood_fill_map)
@@ -51,7 +69,8 @@ static void allocate_map_for_flood_fill(char ***flood_fill_map, int y_max, t_gam
 	(*flood_fill_map)[y_max] = NULL;
 }
 
-static bool	flood_fill_the_map(char **flood_fill_map, int start_x, int start_y, int y_max)
+static bool	flood_fill_the_map(char **flood_fill_map,
+				int start_x, int start_y, int y_max)
 {
 	int	x;
 	int	y;

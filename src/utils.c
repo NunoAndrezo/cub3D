@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/04 13:08:23 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 13:08:24 by nuno             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/cub3d.h"
 
 size_t	ft_strlen(const char *s)
@@ -38,7 +50,7 @@ char *ft_strjoin_char(const char *s, char c)
 	else
 		len = ft_strlen(s);
 
-	new_str = (char *)malloc(len + 2); // +1 for char, +1 for '\0'
+	new_str = (char *)malloc(len + 2);
 	if (!new_str)
 		return NULL;
 

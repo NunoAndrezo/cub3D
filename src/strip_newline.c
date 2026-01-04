@@ -1,26 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*   strip_newline.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/04 13:04:24 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:04:25 by nuno             ###   ########.fr       */
+/*   Created: 2026/01/04 13:08:20 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 13:08:21 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-void	ft_bzero(void *s, size_t n)
+// Removes trailing newline and carriage return from a string, in-place
+void strip_newline(char *str)
 {
-	unsigned char	*ptr;
+	int	len;
 
-	ptr = (unsigned char *) s;
-	while (n > 0)
+	if (!str)
+		return;
+	len = strlen(str);
+	while (len > 0 && (str[len-1] == '\n' || str[len-1] == '\r'))
 	{
-		*ptr = 0;
-		ptr++;
-		n--;
+		str[len-1] = '\0';
+		len--;
 	}
 }

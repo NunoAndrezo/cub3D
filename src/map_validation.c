@@ -1,8 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_validation.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/04 13:07:36 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 13:07:37 by nuno             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/cub3d.h"
 
 static bool	check_player(t_game *game);
-// It doesn't have to be a rectangle.
-// And flood fill to check if the map is closed and its playable
 
 bool	map_is_valid(t_game *game)
 {

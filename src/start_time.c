@@ -1,26 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*   start_time.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/04 13:04:24 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:04:25 by nuno             ###   ########.fr       */
+/*   Created: 2026/01/04 13:08:17 by nuno              #+#    #+#             */
+/*   Updated: 2026/01/04 13:08:19 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-void	ft_bzero(void *s, size_t n)
+uint64_t	get_time_in_ms(void)
 {
-	unsigned char	*ptr;
+	struct timeval	tv;
 
-	ptr = (unsigned char *) s;
-	while (n > 0)
-	{
-		*ptr = 0;
-		ptr++;
-		n--;
-	}
+	gettimeofday(&tv, NULL);
+	return ((uint64_t)(tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
