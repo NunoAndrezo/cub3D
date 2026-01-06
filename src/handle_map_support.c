@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_map_support.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 15:15:09 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 10:57:38 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/06 14:00:52 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ bool	save_color(t_game *game, char *line, char type)
 		game->textures.ceiling_color[2] = b;
 	}
 	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-		return (perror("Error\nRGB color values must be \
-					between 0 and 255\n"), false);
+		return (perror(
+				"Error\nRGB color values must be between 0 and 255\n"), false);
 	return (true);
 }
 

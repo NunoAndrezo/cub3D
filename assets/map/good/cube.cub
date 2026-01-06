@@ -4,8 +4,8 @@ WE ./assets/textures/west_texture.xpm
 EA ./assets/textures/east_texture.xpm
 
 
-F 0 , 0 ,   0
-C 225 , 30	,0
+F 0 , 0 ,   0 
+C 2125 , 30	,0
 
 
 
