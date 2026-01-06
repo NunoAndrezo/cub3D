@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 12:44:41 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 15:18:01 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/05 03:24:00 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,24 @@ typedef struct	s_map
 	int		x_max;
 }				t_map;
 
+typedef struct s_map_ctx
+{
+    int x;
+    int y;
+    int player_count;
+}   t_map_ctx;
+
+typedef struct s_column
+{
+    float   angle;
+    float   dist;
+    int     hit_side;
+    int     column_index;
+    int     start;
+    int     end;
+    int     line_h;
+}   t_column;
+
 typedef struct s_ray
 {
 	float	angle;        // radius angle (rad)
@@ -111,6 +129,10 @@ typedef struct s_ray
 	float	side_dist_y;
 	float	delta_dist_x;
 	float	delta_dist_y;
+	float	pos_x;
+    float	pos_y;
+    int		map_x;
+    int		map_y;
 	float	distance;     // distance till the wall
 	int		hit_side;     // 0 = vertical | 1 = horizontal
 	float	final_distance;
@@ -198,12 +220,14 @@ bool is_texture_or_color_line(t_game *game, char *line, int fd);
 bool	last_map_adjustments(t_game *game);
 bool	map_is_valid(t_game *game);
 
-// initiate.c
+// initiate_game.c
 void	initiate_game(t_game *game);
+
+// initiate_game_utils.c
+void	set_player_angle(t_game *game);
 
 //setup_signals.c
 void	setup_signals(void);
-
 
 //ft_bzero.c
 void	ft_bzero(void *s, size_t n);
@@ -232,20 +256,19 @@ void	dda_step(t_ray *r, int *map_x, int *map_y);
 //raycasting_utils.c
 int		is_wall(t_game *g, int x, int y);
 void	cast_ray(t_game *g, t_ray *r);
-void	init_ray_dir_pos(t_game *g, t_ray *r, float angle, float *pos_x, float *pos_y, int *map_x, int *map_y);
-void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x, int map_y);
+void	init_ray_distances(t_ray *r);
+void	init_ray_dir_pos(t_game *g, t_ray *r, float angle);
 
 //ft_memcpy.c
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
-void	draw_3dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
-void	draw_floor_and_ceiling(t_img *img, int x, int start, int end, t_game *game);
-void	draw_wall(t_img *img, int x, int start, int end, int line_h, t_game *game, float angle, float dist, int hit_side);
+void	draw_3dgame(t_game *game, t_column *col);
 
 //drawing_3d_game_utils.c
-int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end, int *line_height);
+int		calculate_projection(t_game *g, t_column *col);
+void	draw_floor_and_ceiling(t_game *game, int x, int start, int end);
 
 //ft_split.c
 char	**ft_split(char const *s, char c);
@@ -265,10 +288,15 @@ void	start_gaming(t_game *game);
 //mlx_events.c
 void	handle_mlx_events(t_game *game);
 
-//2D_drawing.c
+// 2D_drawing.c
 void	draw_map_to_image(t_game *game, t_img *target);
 void	draw_player(t_game *game);
 void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
+
+// 2D_drawing_utils.c
+int		get_tile_color(char c);
+void	fill_tile(t_img *target, int g_x, int g_y, int color);
+void	draw_tile_border(t_img *target, int g_x, int g_y);
 
 //handle_player_mov_and_rot.c
 void	change_player_rot(t_game *game);
@@ -279,6 +307,21 @@ void	load_game(t_game *game);
 
 //strip_newline.c
 void	strip_newline(char *str);
+
+// key_utils.c
+void	handle_key_press(int key_sym, t_game *game);
+void	handle_key_release(int key_sym, t_game *game);
+
+// map_validation.c
+void	handle_map_char(t_game *game, char c, t_map_ctx *ctx);
+bool	last_map_adjustments(t_game *game);
+bool	map_is_valid(t_game *game);
+
+// map_validation_utils.c
+bool	is_player_char(char c);
+bool	is_valid_map_char(char c);
+int		find_max_len(t_game *game);
+bool	pad_row_to_max(t_game *game, int j, int max_len);
 
 //rgb_to_color.c
 int		rgb_to_color(int rgb[3]);

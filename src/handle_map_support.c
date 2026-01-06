@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   handle_map_support.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 15:15:09 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 15:16:22 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/05 03:40:46 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-static void save_parameteres(t_game *game, char *line, int fd);
-static bool save_color(t_game *game, char *line, char type);
-static bool parse_rgb_values(char *line, int *r, int *g, int *b);
+static void	save_parameteres(t_game *game, char *line, int fd);
+static bool	save_color(t_game *game, char *line, char type);
+static bool	parse_rgb_values(char *line, int *r, int *g, int *b);
 
-bool is_texture_or_color_line(t_game *game, char *line, int fd)
+bool	is_texture_or_color_line(t_game *game, char *line, int fd)
 {
 	if (!line)
 	{
@@ -25,9 +25,9 @@ bool is_texture_or_color_line(t_game *game, char *line, int fd)
 	}
 	if (line[0] == '\0' || line[0] == '\n' || line[0] == ' ' || line[0] == '\t')
 		return (true);
-	else if (ft_strncmp(line, "NO", 2) == 0 || ft_strncmp(line, "SO", 2) == 0 ||
-		ft_strncmp(line, "WE", 2) == 0 || ft_strncmp(line, "EA", 2) == 0 ||
-		ft_strncmp(line, "F", 1) == 0 || ft_strncmp(line, "C", 1) == 0)
+	else if (ft_strncmp(line, "NO", 2) == 0 || ft_strncmp(line, "SO", 2) == 0
+		|| ft_strncmp(line, "WE", 2) == 0 || ft_strncmp(line, "EA", 2) == 0
+		|| ft_strncmp(line, "F", 1) == 0 || ft_strncmp(line, "C", 1) == 0)
 	{
 		save_parameteres(game, line, fd);
 		return (true);
@@ -35,10 +35,10 @@ bool is_texture_or_color_line(t_game *game, char *line, int fd)
 	return (false);
 }
 
-static void save_parameteres(t_game *game, char *line, int fd)
+static void	save_parameteres(t_game *game, char *line, int fd)
 {
-	bool		success;
-	int			i;
+	bool	success;
+	int		i;
 
 	success = true;
 	if (ft_strncmp(line, "NO", 2) == 0)
@@ -128,7 +128,7 @@ static void save_parameteres(t_game *game, char *line, int fd)
 	}
 }
 
-static bool save_color(t_game *game, char *line, char type)
+static bool	save_color(t_game *game, char *line, char type)
 {
 	int	r;
 	int	g;
@@ -138,7 +138,7 @@ static bool save_color(t_game *game, char *line, char type)
 	g = -1;
 	b = -1;
 	if (!parse_rgb_values(line, &r, &g, &b))
-		return false;
+		return (false);
 	if (type == 'F')
 	{
 		game->textures.floor_color[0] = r;
@@ -156,7 +156,7 @@ static bool save_color(t_game *game, char *line, char type)
 	return (true);
 }
 
-static bool parse_rgb_values(char *line, int *r, int *g, int *b)
+static bool	parse_rgb_values(char *line, int *r, int *g, int *b)
 {
 	char	**values;
 	int		i;

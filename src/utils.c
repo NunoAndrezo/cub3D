@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:08:23 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:08:24 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/04 23:07:01 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,41 +40,39 @@ char	*ft_strdup(const char *s)
 	return (ptr);
 }
 
-char *ft_strjoin_char(const char *s, char c)
+char	*ft_strjoin_char(const char *s, char c)
 {
-	char *new_str;
-	size_t len;
+	char	*new_str;
+	size_t	len;
 
 	if (!s)
 		len = 0;
 	else
 		len = ft_strlen(s);
-
 	new_str = (char *)malloc(len + 2);
 	if (!new_str)
-		return NULL;
-
+		return (NULL);
 	if (s)
 		ft_strcpy(new_str, s);
 	if (!s)
-		return NULL;
+		return (NULL);
 	new_str[len] = c;
 	new_str[len + 1] = '\0';
-	return new_str;
+	return (new_str);
 }
 
-char *ft_strcpy(char *dst, const char *src)
+char	*ft_strcpy(char *dst, const char *src)
 {
-	size_t i = 0;
+	size_t	i;
 
+	i = 0;
 	if (!dst || !src)
-		return NULL;
-
+		return (NULL);
 	while (src[i] != '\0')
 	{
 		dst[i] = src[i];
 		i++;
 	}
 	dst[i] = '\0';
-	return dst;
+	return (dst);
 }

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   load_game.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:03:53 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:03:54 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/05 01:23:51 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
 static void	load_texture(t_game *game, t_img *img, char *path);
+static void	check_texture_path(t_game *game, char *path);
 
 void	load_game(t_game *game)
 {
@@ -22,9 +23,9 @@ void	load_game(t_game *game)
 	load_texture(game, &game->textures.east, game->textures.east_texture);
 }
 
-static void	load_texture(t_game *game, t_img *img, char *path)
+static void	check_texture_path(t_game *game, char *path)
 {
-	int		fd;
+	int	fd;
 
 	if (!path)
 	{
@@ -40,12 +41,19 @@ static void	load_texture(t_game *game, t_img *img, char *path)
 		exit(EXIT_FAILURE);
 	}
 	close(fd);
-	img->img_ptr = mlx_xpm_file_to_image(game->mlx_struct, path, &img->width, &img->height);
+}
+
+static void	load_texture(t_game *game, t_img *img, char *path)
+{
+	check_texture_path(game, path);
+	img->img_ptr = mlx_xpm_file_to_image(game->mlx_struct, path,
+			&img->width, &img->height);
 	if (!img->img_ptr)
 	{
 		perror("Error\nFailed to load texture.\n");
 		free_game(game);
 		exit(EXIT_FAILURE);
 	}
-	img->img_pixels_ptr = mlx_get_data_addr(img->img_ptr, &img->bits_per_pixel, &img->line_length, &img->endian);
+	img->img_pixels_ptr = mlx_get_data_addr(img->img_ptr,
+			&img->bits_per_pixel, &img->line_length, &img->endian);
 }

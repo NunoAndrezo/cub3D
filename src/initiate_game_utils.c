@@ -1,27 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   strip_newline.c                                    :+:      :+:    :+:   */
+/*   initiate_game_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/04 13:08:20 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/05 01:19:37 by joaoleote        ###   ########.fr       */
+/*   Created: 2026/01/04 23:32:07 by joaoleote         #+#    #+#             */
+/*   Updated: 2026/01/04 23:35:52 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-void	strip_newline(char *str)
+void	set_player_angle(t_game *game)
 {
-	int	len;
-
-	if (!str)
-		return ;
-	len = strlen(str);
-	while (len > 0 && (str[len - 1] == '\n' || str[len - 1] == '\r'))
-	{
-		str[len - 1] = '\0';
-		len--;
-	}
+	if (game->player.dir == 'N')
+		game->player.player_angle = 270.0f;
+	else if (game->player.dir == 'S')
+		game->player.player_angle = 90.0f;
+	else if (game->player.dir == 'E')
+		game->player.player_angle = 0.0f;
+	else if (game->player.dir == 'W')
+		game->player.player_angle = 180.0f;
 }
