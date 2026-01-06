@@ -6,57 +6,55 @@
 /*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 12:44:41 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 15:18:01 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/06 12:13:34 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
-#define CUB3D_H
+# define CUB3D_H
 
-#ifndef WWIDTH
-#define WWIDTH 1920
-#endif
-#ifndef WHEIGHT
-#define WHEIGHT 1000
-#endif
+# ifndef WWIDTH
+#  define WWIDTH 1920
+# endif
 
-#ifndef PI_VALUE
-#define PI_VALUE 3.14159265
-#endif
+# ifndef WHEIGHT
+#  define WHEIGHT 1000
+# endif
 
-#ifndef PLAYER_MOV_SPEED
-#define PLAYER_MOV_SPEED 1
-#endif
+# ifndef PI_VALUE
+#  define PI_VALUE 3.14159265
+# endif
 
-/* size in pixels to draw each map cell when drawing the top-down map.
- * Increase to make the map bigger on screen. */
-#ifndef ONE_TILE_SIDE
-#define ONE_TILE_SIDE 16
-#endif
+# ifndef PLAYER_MOV_SPEED
+#  define PLAYER_MOV_SPEED 1
+# endif
 
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
-#define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+# ifndef ONE_TILE_SIDE
+#  define ONE_TILE_SIDE 16
+# endif
 
-#include <X11/keysym.h> // for keysyms like XK_Escape
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <string.h>
-#include <stdbool.h>
-#include <signal.h>
-#include <math.h>
-#include <errno.h>
-#include <sys/time.h>
-#include <stdint.h>
+# define ANSI_COLOR_RED "\x1b[31m"
+# define ANSI_COLOR_GREEN "\x1b[32m"
+# define ANSI_COLOR_YELLOW "\x1b[33m"
+# define ANSI_COLOR_BLUE "\x1b[34m"
+# define ANSI_COLOR_MAGENTA "\x1b[35m"
+# define ANSI_COLOR_CYAN "\x1b[36m"
+# define ANSI_COLOR_RESET "\x1b[0m"
 
-#include "../inc/get_next_line.h"
-#include "../minilibx-linux/mlx.h"
+# include <X11/keysym.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <fcntl.h>
+# include <string.h>
+# include <stdbool.h>
+# include <signal.h>
+# include <math.h>
+# include <errno.h>
+# include <sys/time.h>
+# include <stdint.h>
+# include "../inc/get_next_line.h"
+# include "../minilibx-linux/mlx.h"
 
 enum e_colors
 {
@@ -76,6 +74,14 @@ enum e_colors
 	COLOR_YELLOW = 0xFFFF00,
 };
 
+typedef struct s_cpm
+{
+	float	base_per_update;
+	float	updates_per_sec;
+	float	tiles_per_sec;
+	float	dt;
+}	t_cpm;
+
 /* simple image container */
 typedef struct s_img
 {
@@ -88,7 +94,7 @@ typedef struct s_img
 	int		height;
 }	t_img;
 
-typedef struct	s_map
+typedef struct s_map
 {
 	char	**map;
 	char	*map_file;
@@ -100,19 +106,41 @@ typedef struct	s_map
 	int		x_max;
 }				t_map;
 
+typedef struct s_map_ctx
+{
+	int		x;
+	int		y;
+	int		player_count;
+}	t_map_ctx;
+
+typedef struct s_column
+{
+	float	angle;
+	float	dist;
+	int		hit_side;
+	int		column_index;
+	int		start;
+	int		end;
+	int		line_h;
+}	t_column;
+
 typedef struct s_ray
 {
-	float	angle;        // radius angle (rad)
-	float	ray_x;        // current position X (tile units)
-	float	ray_y;        // current position Y (tile units)
-	float	x_step;       // increment in X
-	float	y_step;       // increment in Y
+	float	angle; // radius angle (rad)
+	float	ray_x; // current position X (tile units)
+	float	ray_y; // current position Y (tile units)
+	float	x_step; // increment in X
+	float	y_step; // increment in Y
 	float	side_dist_x;
 	float	side_dist_y;
 	float	delta_dist_x;
 	float	delta_dist_y;
-	float	distance;     // distance till the wall
-	int		hit_side;     // 0 = vertical | 1 = horizontal
+	float	pos_x;
+	float	pos_y;
+	int		map_x;
+	int		map_y;
+	float	distance; // distance till the wall
+	int		hit_side; // 0 = vertical | 1 = horizontal
 	float	final_distance;
 	/* per-ray configuration */
 	int		num_rays; /* 0 = auto (image width) */
@@ -145,7 +173,7 @@ typedef struct s_texture
 	char	*south_texture;
 	char	*west_texture;
 	char	*east_texture;
-	
+
 	t_img	north;
 	t_img	south;
 	t_img	west;
@@ -155,7 +183,7 @@ typedef struct s_texture
 	int		ceiling_color[3];
 }	t_texture;
 
-typedef struct	s_game
+typedef struct s_game
 {
 	t_map				map;
 	void				*mlx_struct;
@@ -180,107 +208,145 @@ typedef struct	s_game
 }				t_game;
 
 //parsing.c
-void	parse(int ac, char **av);
+void		parse(int ac, char **av);
 
 //free_me_baby.c
-void	free_game(t_game *game);
+void		free_game(t_game *game);
 
 //free_me_baby2.c
-void	free_split_values(char **values);
+void		free_split_values(char **values);
 
 //handle_map.c
-void	handle_map(char *map_file, t_game *game);
+void		handle_map(char *map_file, t_game *game);
 
 //handle_map_support.c
-bool is_texture_or_color_line(t_game *game, char *line, int fd);
+bool		is_texture_or_color_line(t_game *game, char *line, int fd);
+bool		save_color(t_game *game, char *line, char type);
+
+//handle_map_support2.c
+void		north_save_parameter(t_game *game, char *line, int i);
+void		south_save_parameter(t_game *game, char *line, int i);
+void		west_save_parameter(t_game *game, char *line, int i);
+void		east_save_parameter(t_game *game, char *line, int i);
+
+//handle_map_support3.c
+bool		save_floor_color(t_game *game, char *line, int i, bool success);
+bool		save_ceiling_color(t_game *game, char *line, int i, bool success);
+void		print_error_and_exit(t_game *game, char *line, int fd);
+void		close_free_exit(int fd, t_game *game, char *line);
+void		copy_map_helper(t_game *game, char *line, int fd, int i);
 
 //map_validation.c
-bool	last_map_adjustments(t_game *game);
-bool	map_is_valid(t_game *game);
+bool		last_map_adjustments(t_game *game);
+bool		map_is_valid(t_game *game);
 
-// initiate.c
-void	initiate_game(t_game *game);
+// initiate_game.c
+void		initiate_game(t_game *game);
+
+// initiate_game_utils.c
+void		set_player_angle(t_game *game);
 
 //setup_signals.c
-void	setup_signals(void);
-
+void		setup_signals(void);
 
 //ft_bzero.c
-void	ft_bzero(void *s, size_t n);
+void		ft_bzero(void *s, size_t n);
 
 // my_math.c
-float	deg_to_rad(float angle_in_degrees);
-float	rad_to_deg(float angle_in_radians);
+float		deg_to_rad(float angle_in_degrees);
+float		rad_to_deg(float angle_in_radians);
 
 //ft_calloc.c
-void	*ft_calloc(size_t count, size_t size);
+void		*ft_calloc(size_t count, size_t size);
 
 //utils.c
-char	*ft_strdup(const char *s);
-size_t	ft_strlen(const char *s);
-char	*ft_strjoin_char(const char *s, char c);
-char	*ft_strcpy(char *dst, const char *src);
+char		*ft_strdup(const char *s);
+size_t		ft_strlen(const char *s);
+char		*ft_strjoin_char(const char *s, char c);
+char		*ft_strcpy(char *dst, const char *src);
 
 //flood_fill.c
-bool	flood_fill(t_game *game);
+bool		flood_fill(t_game *game);
 
 //raycasting.c
-void	lets_see_them_rays(t_game *game);
-float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y);
-void	dda_step(t_ray *r, int *map_x, int *map_y);
+void		lets_see_them_rays(t_game *game);
+float		calc_dist(t_game *g, t_ray *r, int map_x, int map_y);
+void		dda_step(t_ray *r, int *map_x, int *map_y);
 
 //raycasting_utils.c
-int		is_wall(t_game *g, int x, int y);
-void	cast_ray(t_game *g, t_ray *r);
-void	init_ray_dir_pos(t_game *g, t_ray *r, float angle, float *pos_x, float *pos_y, int *map_x, int *map_y);
-void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x, int map_y);
+int			is_wall(t_game *g, int x, int y);
+void		cast_ray(t_game *g, t_ray *r);
+void		init_ray_distances(t_ray *r);
+void		init_ray_dir_pos(t_game *g, t_ray *r, float angle);
 
 //ft_memcpy.c
-void	*ft_memcpy(void *dest, const void *src, size_t n);
-void	*ft_memcpy_normal(void *dest, const void *src, size_t n);
+void		*ft_memcpy(void *dest, const void *src, size_t n);
+void		*ft_memcpy_normal(void *dest, const void *src, size_t n);
 
 //drawing_3d_game.c
-void	draw_3dgame(t_game *game, float angle, float best_dist, int hit_side, int column_index);
-void	draw_floor_and_ceiling(t_img *img, int x, int start, int end, t_game *game);
-void	draw_wall(t_img *img, int x, int start, int end, int line_h, t_game *game, float angle, float dist, int hit_side);
+void		draw_3dgame(t_game *game, t_column *col);
 
 //drawing_3d_game_utils.c
-int		calculate_projection(t_game *g, float ray_angle, float dist, int *start, int *end, int *line_height);
+int			calculate_projection(t_game *g, t_column *col);
+void		draw_floor_and_ceiling(t_game *game, int x, int start, int end);
 
 //ft_split.c
-char	**ft_split(char const *s, char c);
+char		**ft_split(char const *s, char c);
 
 //ft_atoi.c
-int		ft_atoi(const char *str);
+int			ft_atoi(const char *str);
 
 //ft_strncmp.c
-int		ft_strncmp(const char *str1, const char *str2, size_t n);
+int			ft_strncmp(const char *str1, const char *str2, size_t n);
 
 //start_time.c
 uint64_t	get_time_in_ms(void);
 
 //start_gaming.c
-void	start_gaming(t_game *game);
+void		start_gaming(t_game *game);
 
 //mlx_events.c
-void	handle_mlx_events(t_game *game);
+void		handle_mlx_events(t_game *game);
 
-//2D_drawing.c
-void	draw_map_to_image(t_game *game, t_img *target);
-void	draw_player(t_game *game);
-void	my_store_pixel_in_image(t_img *image, int x, int y, int color);
+// 2D_drawing.c
+void		draw_map_to_image(t_game *game, t_img *target);
+void		draw_player(t_game *game);
+void		my_store_pixel_in_image(t_img *image, int x, int y, int color);
+
+// 2D_drawing_utils.c
+int			get_tile_color(char c);
+void		fill_tile(t_img *target, int g_x, int g_y, int color);
+void		draw_tile_border(t_img *target, int g_x, int g_y);
 
 //handle_player_mov_and_rot.c
-void	change_player_rot(t_game *game);
-void	change_player_mov(t_game *game);
+void		change_player_rot(t_game *game);
+void		change_player_mov(t_game *game);
+
+//handle_player_mov_and_rot_helper.c
+bool		is_colision(t_game *game, float nx, float ny);
+void		initiate_cpm(t_cpm *c);
 
 //load_game.c
-void	load_game(t_game *game);
+void		load_game(t_game *game);
 
 //strip_newline.c
-void	strip_newline(char *str);
+void		strip_newline(char *str);
+
+// key_utils.c
+void		handle_key_press(int key_sym, t_game *game);
+void		handle_key_release(int key_sym, t_game *game);
+// map_validation.c
+void		handle_map_char(t_game *game, char c, t_map_ctx *ctx);
+bool		last_map_adjustments(t_game *game);
+bool		map_is_valid(t_game *game);
+
+// map_validation_utils.c
+bool		is_player_char(char c);
+bool		is_valid_map_char(char c);
+int			find_max_len(t_game *game);
+bool		pad_row_to_max(t_game *game, int j, int max_len);
 
 //rgb_to_color.c
-int		rgb_to_color(int rgb[3]);
+int			rgb_to_color(int rgb[3]);
 
 #endif

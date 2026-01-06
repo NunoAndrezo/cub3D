@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/01 16:34:05 by joaoleote         #+#    #+#             */
-/*   Updated: 2026/01/04 13:07:59 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/04 22:35:51 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,22 +39,20 @@ void	cast_ray(t_game *g, t_ray *r)
 	r->ray_y = g->player.pos_y + r->y_step * r->distance;
 }
 
-void	init_ray_dir_pos(t_game *g, t_ray *r, float angle,
-						float *pos_x, float *pos_y, int *map_x, int *map_y)
+void	init_ray_dir_pos(t_game *g, t_ray *r, float angle)
 {
 	r->angle = angle;
 	r->x_step = cosf(angle);
 	r->y_step = sinf(angle);
-	*pos_x = g->player.pos_x;
-	*pos_y = g->player.pos_y;
-	r->ray_x = *pos_x;
-	r->ray_y = *pos_y;
-	*map_x = (int)(*pos_x);
-	*map_y = (int)(*pos_y);
+	r->pos_x = g->player.pos_x;
+	r->pos_y = g->player.pos_y;
+	r->ray_x = r->pos_x;
+	r->ray_y = r->pos_y;
+	r->map_x = (int)r->pos_x;
+	r->map_y = (int)r->pos_y;
 }
 
-void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x,
-							int map_y)
+void	init_ray_distances(t_ray *r)
 {
 	if (r->x_step != 0.0f)
 		r->delta_dist_x = fabsf(1.0f / r->x_step);
@@ -65,11 +63,11 @@ void	init_ray_distances(t_ray *r, float pos_x, float pos_y, int map_x,
 	else
 		r->delta_dist_y = 1000000.0f;
 	if (r->x_step < 0)
-		r->side_dist_x = (pos_x - map_x) * r->delta_dist_x;
+		r->side_dist_x = (r->pos_x - r->map_x) * r->delta_dist_x;
 	else
-		r->side_dist_x = (map_x + 1.0f - pos_x) * r->delta_dist_x;
+		r->side_dist_x = (r->map_x + 1.0f - r->pos_x) * r->delta_dist_x;
 	if (r->y_step < 0)
-		r->side_dist_y = (pos_y - map_y) * r->delta_dist_y;
+		r->side_dist_y = (r->pos_y - r->map_y) * r->delta_dist_y;
 	else
-		r->side_dist_y = (map_y + 1.0f - pos_y) * r->delta_dist_y;
+		r->side_dist_y = (r->map_y + 1.0f - r->pos_y) * r->delta_dist_y;
 }

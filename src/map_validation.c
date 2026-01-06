@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_validation.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:07:36 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/04 13:07:37 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/05 02:17:08 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ static bool	check_player(t_game *game);
 
 bool	map_is_valid(t_game *game)
 {
-	//check for walls, valid characters, etc.
 	if (check_player(game) && flood_fill(game))
 		return (true);
 	perror("Error\nMap is invalid.\n");
@@ -24,83 +23,57 @@ bool	map_is_valid(t_game *game)
 	exit(EXIT_FAILURE);
 }
 
-static bool	check_player(t_game *game)
-{
-	int	i;
-	int	j;
-	int	player;
-
-	i = 0;
-	j = 0;
-	player = 0;
-	while (game->map.map[j])
-	{
-		i = 0;
-		while (game->map.map[j][i])
-		{
-			if (game->map.map[j][i] == 'N' || game->map.map[j][i] == 'W' || game->map.map[j][i] == 'E' || game->map.map[j][i] == 'S')
-			{
-				player++;
-				game->map.player_orientation = game->map.map[j][i];
-				game->map.player_start_x = i;
-				game->map.player_start_y = j;
-			}
-			if (game->map.map[j][i] != '0' && game->map.map[j][i] != '1' && game->map.map[j][i] != ' ' &&
-				game->map.map[j][i] != 'N' && game->map.map[j][i] != 'S' &&
-				game->map.map[j][i] != 'E' && game->map.map[j][i] != 'W')
-			{
-				perror("Error\nInvalid character in map.\n");
-				free_game(game);
-				exit(EXIT_FAILURE);
-			}
-			i++;
-		}
-		j++;
-	}
-	if (player != 1)
-		return (false);
-	return (true);
-}
-
-bool last_map_adjustments(t_game *game)
+bool	last_map_adjustments(t_game *game)
 {
 	int	j;
-	int	i;
 	int	max_len;
-	char *new_row;
 
-	j = 0;
-	max_len = 0;
-	while (j < game->map.y_max)
-	{
-		i = 0;
-		while (game->map.map[j][i])
-			i++;
-		if (i > max_len)
-			max_len = i;
-		j++;
-	}
+	max_len = find_max_len(game);
 	j = 0;
 	while (j < game->map.y_max)
 	{
-		i = 0;
-		while (game->map.map[j][i])
-		{
-			if ((int)ft_strlen(game->map.map[j]) < max_len)
-			{
-				while ((int)ft_strlen(game->map.map[j]) < max_len)
-				{
-					new_row = ft_strjoin_char(game->map.map[j], ' ');
-					if (new_row == NULL)
-						return (false);
-					free(game->map.map[j]);
-					game->map.map[j] = new_row;
-				}
-			}
-			i++;
-		}
+		if (!pad_row_to_max(game, j, max_len))
+			return (false);
 		j++;
 	}
 	game->map.x_max = max_len;
+	return (true);
+}
+
+void	handle_map_char(t_game *game, char c, t_map_ctx *ctx)
+{
+	if (is_player_char(c))
+	{
+		ctx->player_count++;
+		game->map.player_orientation = c;
+		game->map.player_start_x = ctx->x;
+		game->map.player_start_y = ctx->y;
+	}
+	if (!is_valid_map_char(c))
+	{
+		perror("Error\nInvalid character in map.\n");
+		free_game(game);
+		exit(EXIT_FAILURE);
+	}
+}
+
+static bool	check_player(t_game *game)
+{
+	t_map_ctx	ctx;
+
+	ctx.y = 0;
+	ctx.player_count = 0;
+	while (game->map.map[ctx.y])
+	{
+		ctx.x = 0;
+		while (game->map.map[ctx.y][ctx.x])
+		{
+			handle_map_char(game, game->map.map[ctx.y][ctx.x], &ctx);
+			ctx.x++;
+		}
+		ctx.y++;
+	}
+	if (ctx.player_count != 1)
+		return (false);
 	return (true);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/21 21:14:49 by joaoleote         #+#    #+#             */
-/*   Updated: 2026/01/04 14:47:11 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/06 03:21:23 by joaoleote        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	init_ray(t_game *g, t_ray *r, float angle);
 static void	choose_hit(t_game *g, t_ray *r, int column);
 
-void lets_see_them_rays(t_game *g)
+void	lets_see_them_rays(t_game *g)
 {
 	int		i;
 	int		n;
@@ -31,7 +31,7 @@ void lets_see_them_rays(t_game *g)
 	while (i < n)
 	{
 		angle = g->player.player_angle - g->player.fov_degrees / 2.0f
-		+ i * step;
+			+ i * step;
 		init_ray(g, &g->ray, deg_to_rad(angle));
 		cast_ray(g, &g->ray);
 		choose_hit(g, &g->ray, i);
@@ -41,13 +41,8 @@ void lets_see_them_rays(t_game *g)
 
 static void	init_ray(t_game *g, t_ray *r, float angle)
 {
-	float	pos_x;
-	float	pos_y;
-	int		map_x;
-	int		map_y;
-
-	init_ray_dir_pos(g, r, angle, &pos_x, &pos_y, &map_x, &map_y);
-	init_ray_distances(r, pos_x, pos_y, map_x, map_y);
+	init_ray_dir_pos(g, r, angle);
+	init_ray_distances(r);
 }
 
 void	dda_step(t_ray *r, int *map_x, int *map_y)
@@ -81,5 +76,11 @@ float	calc_dist(t_game *g, t_ray *r, int map_x, int map_y)
 
 static void	choose_hit(t_game *g, t_ray *r, int column)
 {
-	draw_3dgame(g, r->angle, r->distance, r->hit_side, column);
+	t_column	col;
+
+	col.angle = r->angle;
+	col.dist = r->distance;
+	col.hit_side = r->hit_side;
+	col.column_index = column;
+	draw_3dgame(g, &col);
 }

@@ -31,7 +31,9 @@ SRC_FILES	=	main.c parsing.c initiate_game.c map_validation.c \
 				2D_drawing.c handle_player_mov_and_rot.c load_game.c \
 				strip_newline.c raycasting_utils.c rgb_to_color.c \
 				drawing_3d_game_utils.c handle_map_support.c \
-				free_me_baby2.c
+				free_me_baby2.c initiate_game_utils.c key_utils.c \
+				map_validation_utils.c 2D_drawing_utils.c handle_map_support2.c \
+				handle_map_support3.c handle_player_mov_and_rot_helper.c
 
 OBJ_FILES	=	$(SRC_FILES:.c=.o)
 
