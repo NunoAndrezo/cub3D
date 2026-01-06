@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_map_support3.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/06 10:40:11 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 11:23:32 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/06 15:01:39 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@ bool	save_floor_color(t_game *game, char *line, int i, bool success)
 		i++;
 	if (line[i] && line[i] >= '0' && line[i] <= '9')
 	{
+		check_for_duplicates(game, line, 'F');
 		success = save_color(game, line + i, 'F');
-		game->color_f = true;
+		game->color_f++;
 	}
 	return (success);
 }
@@ -32,8 +33,9 @@ bool	save_ceiling_color(t_game *game, char *line, int i, bool success)
 		i++;
 	if (line[i] && line[i] >= '0' && line[i] <= '9')
 	{
+		check_for_duplicates(game, line, 'C');
 		success = save_color(game, line + i, 'C');
-		game->color_c = true;
+		game->color_c++;
 	}
 	return (success);
 }

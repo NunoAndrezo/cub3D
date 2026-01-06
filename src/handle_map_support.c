@@ -6,7 +6,7 @@
 /*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 15:15:09 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 14:00:52 by nneves-a         ###   ########.fr       */
+/*   Updated: 2026/01/06 15:08:27 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,14 @@ bool	is_texture_or_color_line(t_game *game, char *line, int fd)
 	if (!line)
 	{
 		perror("Error\nParsing textures and colors.\n");
-		exit(1);
+		close(fd);
+		free_game(game);
 	}
-	if (line[0] == '\0' || line[0] == '\n' || line[0] == ' ' || line[0] == '\t')
+	while (line[0] == ' ' || line[0] == '\t')
+		line++;
+	if (line[0] == '\0' || line[0] == '\n')
 		return (true);
-	else if (ft_strncmp(line, "NO", 2) == 0 || ft_strncmp(line, "SO", 2) == 0
+	if (ft_strncmp(line, "NO", 2) == 0 || ft_strncmp(line, "SO", 2) == 0
 		|| ft_strncmp(line, "WE", 2) == 0 || ft_strncmp(line, "EA", 2) == 0
 		|| ft_strncmp(line, "F", 1) == 0 || ft_strncmp(line, "C", 1) == 0)
 	{

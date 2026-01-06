@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   handle_player_mov_and_rot.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:07:22 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 11:55:44 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/06 15:38:55 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-static void	change_player_rot_helper(t_game *game, float rot_delta_deg);
+static void	change_player_rot_helper(t_game *game, float *rot_delta_deg);
 static void	change_player_mov_helper(t_game *game, float *nx,
 				float *ny, float displacement);
 static bool	check_diagonally_strafing(t_game *game);
@@ -30,24 +30,24 @@ void	change_player_rot(t_game *game)
 	rot_deg_per_sec = rot_deg_per_update * updates_per_sec;
 	rot_delta_deg = rot_deg_per_sec * dt_seconds;
 	rot_delta_deg *= game->player.player_rot_multiplier;
-	change_player_rot_helper(game, rot_delta_deg);
+	change_player_rot_helper(game, &rot_delta_deg);
 }
 
-static void	change_player_rot_helper(t_game *game, float rot_delta_deg)
+static void	change_player_rot_helper(t_game *game, float *rot_delta_deg)
 {
 	if (game->player.player_rot_left)
 	{
-		game->player.player_angle -= rot_delta_deg;
+		game->player.player_angle -= *rot_delta_deg;
 		if (game->player.player_angle < 0.0f)
 			game->player.player_angle += 360.0f;
 		game->player.player_delta_x = -cosf(
 				deg_to_rad(game->player.player_angle));
-		game->player.player_delta_y = sinf(
+		game->player.player_delta_y = -sinf(
 				deg_to_rad(game->player.player_angle));
 	}
 	if (game->player.player_rot_right)
 	{
-		game->player.player_angle += rot_delta_deg;
+		game->player.player_angle += *rot_delta_deg;
 		if (game->player.player_angle > 360.0f)
 			game->player.player_angle -= 360.0f;
 		game->player.player_delta_x = -cosf(

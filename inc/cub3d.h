@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 12:44:41 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 12:13:34 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/06 15:34:38 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,12 +199,12 @@ typedef struct s_game
 	float				final_distance;
 	t_ray				ray;
 	t_texture			textures;
-	bool				texture_w;
-	bool				texture_s;
-	bool				texture_e;
-	bool				texture_n;
-	bool				color_f;
-	bool				color_c;
+	int					texture_w;
+	int					texture_s;
+	int					texture_e;
+	int					texture_n;
+	int					color_f;
+	int					color_c;
 }				t_game;
 
 //parsing.c
@@ -235,6 +235,9 @@ bool		save_ceiling_color(t_game *game, char *line, int i, bool success);
 void		print_error_and_exit(t_game *game, char *line, int fd);
 void		close_free_exit(int fd, t_game *game, char *line);
 void		copy_map_helper(t_game *game, char *line, int fd, int i);
+
+//handle_map_support4.c
+void		check_for_duplicates(t_game *game, char *line, char type);
 
 //map_validation.c
 bool		last_map_adjustments(t_game *game);

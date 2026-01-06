@@ -1,14 +1,14 @@
-NO ./assets/textures/north_texture.xpm
-SO ./assets/textures/south_texture.xpm
+           F 0 , 0 ,   0 
+        
+
+  NO ./assets/textures/north_texture.xpm
+
+
+		SO	 ./assets/textures/south_texture.xpm
 WE ./assets/textures/west_texture.xpm
-EA ./assets/textures/east_texture.xpm
 
-
-F 0 , 0 ,   0 
-C 2125 , 30	,0
-
-
-
+	 	   	C 225 , 30	,0
+ EA ./assets/textures/east_texture.xpm
 
 11111111
 10100001
@@ -18,3 +18,6 @@ C 2125 , 30	,0
 1N000101
 10000001
 11111111
+
+
+

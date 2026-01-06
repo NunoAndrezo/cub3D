@@ -6,7 +6,7 @@
 /*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:07:33 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 13:57:59 by nneves-a         ###   ########.fr       */
+/*   Updated: 2026/01/06 14:17:14 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ static bool	check_max_dimensions(t_game *game)
 		if (game->map.x_max > 110 || game->map.y_max > 60
 			|| (game->map.x_max <= 2 && game->map.y_max <= 2))
 		{
-			perror("Error\nMap dimensions exceed maximum allowed size of 110x50.\n");
+			perror(
+				"Error\nMap dimensions exceed maximum allowed size.\n");
 			free_game(game);
 			exit(EXIT_FAILURE);
 		}

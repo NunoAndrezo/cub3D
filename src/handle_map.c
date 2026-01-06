@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_map.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:07:16 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 11:27:47 by nuno             ###   ########.fr       */
+/*   Updated: 2026/01/06 15:03:44 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,13 @@ void	handle_map(char *map_file, t_game *game)
 	if (!game->map.map_file)
 	{
 		perror("Error\nNo map file provided\n");
+		free_game(game);
 		exit(EXIT_FAILURE);
 	}
 	if (count_num_of_lines_and_check_textures(game, game->map.map_file) <= 0)
 	{
 		perror("Error\nMap file is empty\n");
+		free_game(game);
 		exit(EXIT_FAILURE);
 	}
 	if (!game->textures.north_texture || !game->textures.south_texture
@@ -53,10 +55,23 @@ static int	count_num_of_lines_and_check_textures(t_game *game, char *map_file)
 	i = 0;
 	fd = open(map_file, O_RDONLY);
 	if (fd < 0)
-		(perror("Error\nCannot open map file\n"), exit(EXIT_FAILURE));
+	{
+		perror("Error\nCannot open map file\n");
+		free_game(game);
+		exit(EXIT_FAILURE);
+	}
 	game->map.y_max = 0;
 	line = get_next_line(fd);
 	count_helper(game, line, i, fd);
+	if (game->texture_e > 1 || game->texture_n > 1
+		|| game->texture_s > 1 || game->texture_w > 1
+		|| game->color_f > 1 || game->color_c > 1)
+	{
+		perror("Error\nIncorrect number of texture or color definitions\n");
+		free_game(game);
+		close(fd);
+		exit(EXIT_FAILURE);
+	}
 	return (close(fd), game->map.y_max);
 }
 
@@ -96,11 +111,15 @@ static void	copy_map(char *map_file, t_game *game)
 	allocate_map(game);
 	fd = open(map_file, O_RDONLY);
 	if (fd < 0)
-		(perror("Error\nCannot open map file\n"), exit(EXIT_FAILURE));
+	{
+		perror("Error\nCannot open map file\n");
+		free_game(game);
+		exit(EXIT_FAILURE);
+	}
 	line = get_next_line(fd);
 	if (!line)
 		(perror("Error\nEmpty or invalid map file\n"),
-			close(fd), exit(EXIT_FAILURE));
+			close(fd), free_game(game), exit(EXIT_FAILURE));
 	if (line && line[ft_strlen(line) - 1] == '\n')
 		line[ft_strlen(line) - 1] = '\0';
 	copy_map_helper(game, line, fd, i);
