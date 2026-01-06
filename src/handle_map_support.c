@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   handle_map_support.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: joaoleote <joaoleote@student.42.fr>        +#+  +:+       +#+        */
+/*   By: nuno <nuno@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 15:15:09 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/05 03:40:46 by joaoleote        ###   ########.fr       */
+/*   Updated: 2026/01/06 10:57:38 by nuno             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
 static void	save_parameteres(t_game *game, char *line, int fd);
-static bool	save_color(t_game *game, char *line, char type);
 static bool	parse_rgb_values(char *line, int *r, int *g, int *b);
 
 bool	is_texture_or_color_line(t_game *game, char *line, int fd)
@@ -41,94 +40,26 @@ static void	save_parameteres(t_game *game, char *line, int fd)
 	int		i;
 
 	success = true;
+	i = 0;
 	if (ft_strncmp(line, "NO", 2) == 0)
-	{
-		i = 2;
-		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			i++;
-		if (line[i])
-		{
-			game->textures.north_texture = ft_strdup(line + i);
-			strip_newline(game->textures.north_texture);
-			game->texture_n = true;
-		}
-	}
+		north_save_parameter(game, line, i);
 	else if (ft_strncmp(line, "SO", 2) == 0)
-	{
-		i = 2;
-		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			i++;
-		if (line[i])
-		{
-			game->textures.south_texture = ft_strdup(line + i);
-			strip_newline(game->textures.south_texture);
-			game->texture_s = true;
-		}
-	}
+		south_save_parameter(game, line, i);
 	else if (ft_strncmp(line, "WE", 2) == 0)
-	{
-		i = 2;
-		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			i++;
-		if (line[i])
-		{
-			game->textures.west_texture = ft_strdup(line + i);
-			strip_newline(game->textures.west_texture);
-			game->texture_w = true;
-		}
-	}
+		west_save_parameter(game, line, i);
 	else if (ft_strncmp(line, "EA", 2) == 0)
-	{
-		i = 2;
-		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			i++;
-		if (line[i])
-		{
-			game->textures.east_texture = ft_strdup(line + i);
-			strip_newline(game->textures.east_texture);
-			game->texture_e = true;
-		}
-	}
+		east_save_parameter(game, line, i);
 	else if (ft_strncmp(line, "F", 1) == 0)
-	{
-		i = 1;
-		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			i++;
-		if (line[i] && line[i] >= '0' && line[i] <= '9')
-		{
-			success = save_color(game, line + i, 'F');
-			game->color_f = true;
-		}
-	}
+		success = save_floor_color(game, line, i, success);
 	else if (ft_strncmp(line, "C", 1) == 0)
-	{
-		i = 1;
-		while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
-			i++;
-		if (line[i] && line[i] >= '0' && line[i] <= '9')
-		{
-			success = save_color(game, line + i, 'C');
-			game->color_c = true;
-		}
-	}
+		success = save_ceiling_color(game, line, i, success);
 	else
-	{
-		perror("Error\nInvalid texture or color line in map file\n");
-		close(fd);
-		free(line);
-		free_game(game);
-		exit(EXIT_FAILURE);
-	}
+		print_error_and_exit(game, line, fd);
 	if (success == false)
-	{
-		close(fd);
-		free(line);
-		free_game(game);
-		exit(EXIT_FAILURE);
-	}
+		close_free_exit(fd, game, line);
 }
 
-static bool	save_color(t_game *game, char *line, char type)
+bool	save_color(t_game *game, char *line, char type)
 {
 	int	r;
 	int	g;
@@ -152,7 +83,8 @@ static bool	save_color(t_game *game, char *line, char type)
 		game->textures.ceiling_color[2] = b;
 	}
 	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-		return (perror("Error\nRGB color values must be between 0 and 255\n"), false);
+		return (perror("Error\nRGB color values must be \
+					between 0 and 255\n"), false);
 	return (true);
 }
 
