@@ -6,35 +6,39 @@
 /*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/06 10:40:11 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 15:01:39 by nneves-a         ###   ########.fr       */
+/*   Updated: 2026/01/06 17:50:47 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-bool	save_floor_color(t_game *game, char *line, int i, bool success)
+bool	save_floor_color(t_game *game, char *line, char *tmp, bool success)
 {
+	int	i;
+
+	check_for_duplicates(game, line, 'F');
 	i = 1;
-	while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
+	while ((tmp[i] == ' ' || tmp[i] == '\t') && tmp[i] != '\0')
 		i++;
-	if (line[i] && line[i] >= '0' && line[i] <= '9')
+	if (tmp[i] && tmp[i] >= '0' && tmp[i] <= '9')
 	{
-		check_for_duplicates(game, line, 'F');
-		success = save_color(game, line + i, 'F');
+		success = save_color(game, tmp + i, 'F');
 		game->color_f++;
 	}
 	return (success);
 }
 
-bool	save_ceiling_color(t_game *game, char *line, int i, bool success)
+bool	save_ceiling_color(t_game *game, char *line, char *tmp, bool success)
 {
+	int	i;
+
+	check_for_duplicates(game, line, 'C');
 	i = 1;
-	while ((line[i] == ' ' || line[i] == '\t') && line[i] != '\0')
+	while ((tmp[i] == ' ' || tmp[i] == '\t') && tmp[i] != '\0')
 		i++;
-	if (line[i] && line[i] >= '0' && line[i] <= '9')
+	if (tmp[i] && tmp[i] >= '0' && tmp[i] <= '9')
 	{
-		check_for_duplicates(game, line, 'C');
-		success = save_color(game, line + i, 'C');
+		success = save_color(game, tmp + i, 'C');
 		game->color_c++;
 	}
 	return (success);
@@ -51,6 +55,7 @@ void	print_error_and_exit(t_game *game, char *line, int fd)
 
 void	close_free_exit(int fd, t_game *game, char *line)
 {
+	perror("Error\nWrong Color in Ceiling/Floor\n");
 	close(fd);
 	free(line);
 	free_game(game);

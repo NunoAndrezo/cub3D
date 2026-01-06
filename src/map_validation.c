@@ -6,17 +6,18 @@
 /*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 13:07:36 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 15:08:49 by nneves-a         ###   ########.fr       */
+/*   Updated: 2026/01/06 16:42:47 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
 static bool	check_player(t_game *game);
+static bool	check_map_enclosure(t_game *game);
 
 bool	map_is_valid(t_game *game)
 {
-	if (check_player(game) && flood_fill(game))
+	if (check_player(game) && flood_fill(game) && check_map_enclosure(game))
 		return (true);
 	perror("Error\nMap is invalid.\n");
 	free_game(game);
@@ -75,5 +76,27 @@ static bool	check_player(t_game *game)
 	}
 	if (ctx.player_count != 1)
 		return (false);
+	return (true);
+}
+
+static bool	check_map_enclosure(t_game *game)
+{
+	int	x;
+	int	y;
+
+	y = 0;
+	while (game->map.map[y] != NULL)
+	{
+		x = 0;
+		while (x < game->map.map[y][x] != '\0')
+		{
+			if (game->map.map[y][0] == '\0' || game->map.map[y][0] == '\n')
+				return (false);
+			x++;
+		}
+		if (game->map.map[y][0] == '\0')
+			return (false);
+		y++;
+	}
 	return (true);
 }

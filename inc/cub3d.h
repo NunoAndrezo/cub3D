@@ -6,7 +6,7 @@
 /*   By: nneves-a <nneves-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/04 12:44:41 by nuno              #+#    #+#             */
-/*   Updated: 2026/01/06 15:34:38 by nneves-a         ###   ########.fr       */
+/*   Updated: 2026/01/06 17:40:38 by nneves-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,14 +224,15 @@ bool		is_texture_or_color_line(t_game *game, char *line, int fd);
 bool		save_color(t_game *game, char *line, char type);
 
 //handle_map_support2.c
-void		north_save_parameter(t_game *game, char *line, int i);
-void		south_save_parameter(t_game *game, char *line, int i);
-void		west_save_parameter(t_game *game, char *line, int i);
-void		east_save_parameter(t_game *game, char *line, int i);
+void		north_save_parameter(t_game *game, char *line, char *tmp);
+void		south_save_parameter(t_game *game, char *line, char *tmp);
+void		west_save_parameter(t_game *game, char *line, char *tmp);
+void		east_save_parameter(t_game *game, char *line, char *tmp);
 
 //handle_map_support3.c
-bool		save_floor_color(t_game *game, char *line, int i, bool success);
-bool		save_ceiling_color(t_game *game, char *line, int i, bool success);
+bool		save_floor_color(t_game *game, char *line, char *tmp, bool success);
+bool		save_ceiling_color(t_game *game, char *line,
+				char *tmp, bool success);
 void		print_error_and_exit(t_game *game, char *line, int fd);
 void		close_free_exit(int fd, t_game *game, char *line);
 void		copy_map_helper(t_game *game, char *line, int fd, int i);
